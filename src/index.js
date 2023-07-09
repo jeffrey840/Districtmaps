@@ -1,17 +1,50 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React, { useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+const Barcelona = () => {
+	const mapContainerRef = useRef(null);
+
+	const googleChecker = () => {
+		if (!window.google) {
+			setTimeout(googleChecker, 100);
+			console.log("not there yet");
+		} else {
+			console.log("we're good to go!!");
+			renderMap();
+		}
+	}
+
+	const renderMap = () => {
+		const coords = { lat: 41.375885, lng: 2.177813 };
+		// create map instance
+		new window.google.maps.Map(mapContainerRef.current, {
+			zoom: 16,
+			center: {
+				lat: coords.lat,
+				lng: coords.lng
+			}
+		});
+	}
+
+	useEffect(() => {
+		googleChecker();
+	}, []);
+
+	return (
+		<div className="card map-holder">
+			<div className="card-block" ref={mapContainerRef} />
+		</div>
+	);
+}
+
+const App = () => (
+	<div className="row">
+		<div className="col-12">
+			<h2 className="text-center">React - Google Maps</h2>
+			<hr />
+			<Barcelona />
+		</div>
+	</div>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+ReactDOM.render(<App />, document.getElementById("app"));
