@@ -1,43 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+<html>
+<head>
+	<title>Simple Map</title>
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+	<link rel="stylesheet" type="text/css" href="../src/index.css" />
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+</head>
+<body>
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-  </body>
+
+<!--https://stackoverflow.com/questions/11147803/how-to-use-zip-code-instead-lat-and-lng-in-google-maps-api-->
+
+<script type="module">
+
+	let map;
+	//@ts-ignore
+	let featureLayer;
+
+	async function initMap() {
+		// Request needed libraries.
+		const { Map } = await google.maps.importLibrary("maps");
+
+		map = new Map(document.getElementById("map"), {
+			center: { lat: 29.7604, lng: -95.3698 },
+			zoom: 12,
+			// In the cloud console, configure this Map ID with a style that enables the
+			// "Locality" feature layer.
+			mapId: "a3efe1c035bad51b", // <YOUR_MAP_ID_HERE>,
+		});
+		//@ts-ignore
+		featureLayer = map.getFeatureLayer("LOCALITY");
+		// Define a style with purple fill and border.
+		//@ts-ignore
+		const featureStyleOptions = {
+			strokeColor: "#810FCB",
+			strokeOpacity: 1.0,
+			strokeWeight: 3.0,
+			fillColor: "#810FCB",
+			fillOpacity: 0.5,
+		};
+
+
+
+
+
+
+		// Apply the style to a single boundary.
+		//@ts-ignore
+		featureLayer.style = (options) => {
+			if (options.feature.placeId == "ChIJ0zQtYiWsVHkRk8lRoB1RNPo") {
+				// Hana, HI
+				return featureStyleOptions;
+			}
+		};
+	}
+
+	initMap();
+
+</script>
+
+<script type="module">
+
+	const url = 'https://zillow-com1.p.rapidapi.com/buildWebUrl?location=Houston&home_type=Houses';
+	const options = {
+		method: 'GET',
+		headers: {
+			'X-RapidAPI-Key': '',
+			'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+		}
+	};
+
+	try {
+		const response = await fetch(url, options);
+		const result = await response.text();
+		console.log(result);
+	} catch (error) {
+		console.error(error);
+	}
+
+</script>
+
+<div id="map"></div>
+
+<!-- prettier-ignore -->
+<script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+({key: "AIzaSyBWLO1u8YFNIsvBErii5GoiXRVvOEyQK8o", v: "weekly"});</script>
+</body>
 </html>
