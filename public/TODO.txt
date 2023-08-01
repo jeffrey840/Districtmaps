@@ -1,2 +1,6 @@
 add zillow api to project
 fix the issue when running the app
+
+
+look at the zip file and look for the respective zipcode
+
