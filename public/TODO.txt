@@ -7,9 +7,19 @@ look at the zip file and look for the respective zipcode
 
 upload zipcode to the zipcode_2 github
 
+all district
+https://www.hccs.edu/media/houston-community-college/district/pdf/01262022_Redistricting_Current-Voting-Districts.pdf
+
 
 district 1
 https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-I-with-Zip-Codes.jpg
+
+77081
+77007
+77008
+77018
+77022
+77078
 
 district 2
 https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-II-with-Zip-Codes.jpg
