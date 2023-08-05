@@ -24,11 +24,40 @@ https://www.hccs.edu/media/houston-community-college/district/images/Single-Memb
 district 2
 https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-II-with-Zip-Codes.jpg
 
+77092
+77091
+77050
+77078
+77028
+77026
+77020
+77029
+
 district 3
 https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-III-with-Zip-Codes.jpg
 
+77047
+77048
+77061
+77087
+77017
+77023
+77204
+77004
+
 district 4
 https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-IV-with-Zip-Codes.jpg
+
+77072
+77036
+77074
+77025
+77054
+77051
+77033
+77021
+77004
+77030
 
 district 5
 https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-V-with-Zip-Codes.jpg
