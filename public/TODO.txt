@@ -10,6 +10,8 @@ upload zipcode to the zipcode_2 github
 have zipcodes in one array
 and change the color inside the kml file
 look for color and google kml colors
++++ in order to change colors change kml color on github_2
+
 
 all district
 https://www.hccs.edu/media/houston-community-college/district/pdf/01262022_Redistricting_Current-Voting-Districts.pdf
