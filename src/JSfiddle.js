@@ -7,7 +7,7 @@ function initMap() {
 		center: { lat: 37.06, lng: -95.68 },
 	});
 	const kmlLayer = new google.maps.KmlLayer({
-		url: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip77056.kml",
+		url: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip77056.km",
 		suppressInfoWindows: true,
 		map: map,
 	});

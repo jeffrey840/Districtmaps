@@ -15,5 +15,7 @@ function hexToKMLColor(hexColor) {
 
 // Test the function
 const hexColorCode = '#FFA500'; // Orange
+
+
 const kmlColorCode = hexToKMLColor(hexColorCode);
 alert(kmlColorCode); // Output: "ff00a5ff"

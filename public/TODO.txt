@@ -8,9 +8,6 @@ look at the zip file and look for the respective zipcode
 upload zipcode to the zipcode_2 github
 
 have zipcodes in one array
-and change the color inside the kml file
-look for color and google kml colors
-+++ in order to change colors change kml color on github_2
 
 
 all district
@@ -20,104 +17,102 @@ https://www.hccs.edu/media/houston-community-college/district/pdf/01262022_Redis
 district 1
 https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-I-with-Zip-Codes.jpg
 
-77081
-77007
-77008
-77018
-77022
-77078
+77081-
+77007-
+77008-
+77018-
+77022-
+77078-
 
 district 2
 https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-II-with-Zip-Codes.jpg
 
-77092
-77091
-77050
-77078
-77028
-77026
-77020
-77029
+77092-
+77091-
+77050-
+77078-
+77028-
+77026-
+77020-
+77029-
 
 district 3
 https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-III-with-Zip-Codes.jpg
 
-77047
-77048
-77061
-77087
-77017
-77023
-77204
-77004
+77047-
+77048-
+77061-
+77087-
+77017-
+77023-
+77204 does not exist
+77004-
 
 district 4
 https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-IV-with-Zip-Codes.jpg
 
-77072
-77036
-77074
-77025
-77054
-77051
-77033
-77021
-77004
-77030
+77072-
+77036-
+77074-
+77025-
+77054-
+77051-
+77033-
+77021-
+77004-
+77030-
 
 district 5
 https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-V-with-Zip-Codes.jpg
 
-77063
-77096
-77401
-77005
-77027
+77063-
+77096-
+77401-
+77005-
+77027-
 
 district 6
 https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-VI-with-Zip-Codes.jpg
 
-77082
-77077
-77042
-77063
-77057
-77056
-
-
+77082-
+77077-
+77042-
+77063-
+77057-
+77056-
 
 district7
 https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-VII-with-Zip-Codes.jpg
 
-77083
-77072
-77099
-77477
-77489
-77545
-77459
+77083-
+77072-
+77099-
+77477-
+77489-
+77545-
+77459-
 
 district 8
 https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-VIII-with-Zip-Codes.jpg
 
-77013
-77012
-77011
-77020
-77003
-77006
-77098
-77009
-
+77013-
+77012-
+77011-
+77020-
+77003-
+77006-
+77098-
+77009-
 
 district 9
 https://www.hccs.edu/media/houston-community-college/district/pdf/Single-Member-District-IX-with-Zip-Codes.pdf
-77031
-77071
-77085
-77035
-77045
-77048
+
+77031-
+77071-
+77085-
+77035-
+77045-
+77048-
 
 
 
