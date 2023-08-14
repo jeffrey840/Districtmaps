@@ -9,46 +9,6 @@
 <body>
 <!--https://stackoverflow.com/questions/11147803/how-to-use-zip-code-instead-lat-and-lng-in-google-maps-api-->
 
-<!--============== OLD MAP ==============-->
-
-<!--<script type="module">-->
-<!--	let map;-->
-<!--	async function initMap() {-->
-<!--		// Request needed libraries.-->
-<!--		const { Map } = await google.maps.importLibrary("maps");-->
-
-<!--		map = new Map(document.getElementById("map"), {-->
-<!--			center: { lat: 29.7604, lng: -95.3698 },-->
-<!--			zoom: 12,-->
-<!--			// In the cloud console, configure this Map ID with a style that enables the-->
-<!--			// "Locality" feature layer.-->
-<!--			mapId: "a3efe1c035bad51b", // <YOUR_MAP_ID_HERE>,-->
-<!--		});-->
-<!--		//@ts-ignore-->
-<!--		featureLayer = map.getFeatureLayer("LOCALITY");-->
-
-<!--		// Define a style with purple fill and border.-->
-<!--		//@ts-ignore-->
-<!--		const featureStyleOptions = {-->
-<!--			strokeColor: "#810FCB",-->
-<!--			strokeOpacity: 1.0,-->
-<!--			strokeWeight: 3.0,-->
-<!--			fillColor: "#810FCB",-->
-<!--			fillOpacity: 0.5,-->
-<!--		};-->
-
-<!--		// Apply the style to a single boundary.-->
-<!--		//@ts-ignore-->
-<!--		featureLayer.style = (options) => {-->
-<!--			if (options.feature.placeId == "ChIJAYWNSLS4QIYROwVl894CDco") {-->
-<!--				// Hana, HI-->
-<!--				return featureStyleOptions;-->
-<!--			}-->
-<!--		};-->
-<!--	}-->
-
-<!--	initMap();-->
-<!--</script>-->
 
 <!--============== ZILLOW ==============-->
 
@@ -78,23 +38,88 @@
 	<div id="sidebar"></div>
 </div>
 
-<!--
-  The `defer` attribute causes the callback to execute after the full HTML
-  document has been parsed. For non-blocking uses, avoiding race conditions,
-  and consistent behavior across browsers, consider loading using Promises.
-  See https://developers.google.com/maps/documentation/javascript/load-maps-js-api
-  for more information.
-  -->
+<button id="toggleButton">Toggle KML Overlay</button>
+
+
+
+<!--<script type="module">-->
+<!--	function initMap() {-->
+<!--		const map = new google.maps.Map(document.getElementById("map"), {-->
+<!--			zoom: 12,-->
+<!--			center: { lat: 37.06, lng: -95.68 },-->
+<!--		});-->
+
+<!--		// KML Layer for zip77056-->
+<!--		const kmlLayer = new google.maps.KmlLayer({-->
+<!--			url: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip77056.kml",-->
+<!--			suppressInfoWindows: true,-->
+<!--			map: map,-->
+<!--		});-->
+
+<!--		kmlLayer.addListener("click", (kmlEvent) => {-->
+<!--			const text = kmlEvent.featureData.description;-->
+<!--			showInContentWindow(text);-->
+<!--		});-->
+
+<!--		// Load KML file using fetch-->
+<!--		fetch("https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip77056.kml")-->
+<!--			.then(response => response.text())-->
+<!--			.then(data => parseKmlCoordinates(data))-->
+<!--			.catch(error => console.error(error));-->
+
+<!--		function parseKmlCoordinates(kmlData) {-->
+<!--			const parser = new DOMParser();-->
+<!--			const xmlDoc = parser.parseFromString(kmlData, "text/xml");-->
+
+<!--			const coordinatesElement = xmlDoc.querySelector("LinearRing coordinates");-->
+<!--			const coordinatesText = coordinatesElement.textContent.trim();-->
+<!--			const coordinatePairs = coordinatesText.split(" ");-->
+
+<!--			const coordinates = coordinatePairs.map(pair => {-->
+<!--				const [lng, lat] = pair.split(",");-->
+<!--				return { lat: parseFloat(lat), lng: parseFloat(lng) };-->
+<!--			});-->
+
+<!--			placeRedDots(coordinates);-->
+<!--		}-->
+
+<!--		function placeRedDots(coordinates) {-->
+<!--			coordinates.forEach(coordinate => {-->
+<!--				new google.maps.Marker({-->
+<!--					position: coordinate,-->
+<!--					map: map,-->
+<!--					icon: {-->
+<!--						path: google.maps.SymbolPath.CIRCLE,-->
+<!--						fillColor: "red",-->
+<!--						fillOpacity: 1,-->
+<!--						strokeColor: "white",-->
+<!--						strokeWeight: 2,-->
+<!--						scale: 4,-->
+<!--					},-->
+<!--				});-->
+<!--			});-->
+<!--		}-->
+
+<!--		function showInContentWindow(text) {-->
+<!--			const sidebar = document.getElementById("sidebar");-->
+<!--			sidebar.innerHTML = text;-->
+<!--		}-->
+<!--	}-->
+
+<!--	window.initMap = initMap;-->
+<!--</script>-->
+
 
 <script type="module">
+	let map, kmlLayer;
+
 	function initMap() {
-		const map = new google.maps.Map(document.getElementById("map"), {
+		map = new google.maps.Map(document.getElementById("map"), {
 			zoom: 12,
 			center: { lat: 37.06, lng: -95.68 },
 		});
 
-		// KML Layer for zip77056
-		const kmlLayer = new google.maps.KmlLayer({
+		kmlLayer = new google.maps.KmlLayer({
 			url: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip77056.kml",
 			suppressInfoWindows: true,
 			map: map,
@@ -105,55 +130,23 @@
 			showInContentWindow(text);
 		});
 
-		// Load KML file using fetch
-		fetch("https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip77056.kml")
-			.then(response => response.text())
-			.then(data => parseKmlCoordinates(data))
-			.catch(error => console.error(error));
+		document.getElementById("toggleButton").addEventListener("click", toggleKML);
+	}
 
-		function parseKmlCoordinates(kmlData) {
-			const parser = new DOMParser();
-			const xmlDoc = parser.parseFromString(kmlData, "text/xml");
-
-			const coordinatesElement = xmlDoc.querySelector("LinearRing coordinates");
-			const coordinatesText = coordinatesElement.textContent.trim();
-			const coordinatePairs = coordinatesText.split(" ");
-
-			const coordinates = coordinatePairs.map(pair => {
-				const [lng, lat] = pair.split(",");
-				return { lat: parseFloat(lat), lng: parseFloat(lng) };
-			});
-
-			placeRedDots(coordinates);
-		}
-
-		function placeRedDots(coordinates) {
-			coordinates.forEach(coordinate => {
-				new google.maps.Marker({
-					position: coordinate,
-					map: map,
-					icon: {
-						path: google.maps.SymbolPath.CIRCLE,
-						fillColor: "red",
-						fillOpacity: 1,
-						strokeColor: "white",
-						strokeWeight: 2,
-						scale: 4,
-					},
-				});
-			});
-		}
-
-		function showInContentWindow(text) {
-			const sidebar = document.getElementById("sidebar");
-			sidebar.innerHTML = text;
+	function toggleKML() {
+		if (kmlLayer.getMap() === null) {
+			kmlLayer.setMap(map);
+		} else {
+			kmlLayer.setMap(null);
 		}
 	}
 
+	function showInContentWindow(text) {
+		const sidebar = document.getElementById("sidebar");
+		sidebar.innerHTML = text;
+	}
 	window.initMap = initMap;
 </script>
-
-
 <!--  https://maps.googleapis.com/maps/api/js?key=GOOGLE_MAPS_API_KEY&callback=initMap -->
 <script
 		src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"
