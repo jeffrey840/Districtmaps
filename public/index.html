@@ -93,29 +93,56 @@
 			center: { lat: 37.06, lng: -95.68 },
 		});
 
-		// First KML Layer
-		const kmlLayer1 = new google.maps.KmlLayer({
+		// KML Layer for zip77056
+		const kmlLayer = new google.maps.KmlLayer({
 			url: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip77056.kml",
 			suppressInfoWindows: true,
 			map: map,
 		});
 
-		kmlLayer1.addListener("click", (kmlEvent) => {
+		kmlLayer.addListener("click", (kmlEvent) => {
 			const text = kmlEvent.featureData.description;
 			showInContentWindow(text);
 		});
 
-		// Second KML Layer
-		const kmlLayer2 = new google.maps.KmlLayer({
-			url: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/_zip77080(2).kml",
-			suppressInfoWindows: true,
-			map: map,
-		});
+		// Load KML file using fetch
+		fetch("https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip77056.kml")
+			.then(response => response.text())
+			.then(data => parseKmlCoordinates(data))
+			.catch(error => console.error(error));
 
-		kmlLayer2.addListener("click", (kmlEvent) => {
-			const text = kmlEvent.featureData.description;
-			showInContentWindow(text);
-		});
+		function parseKmlCoordinates(kmlData) {
+			const parser = new DOMParser();
+			const xmlDoc = parser.parseFromString(kmlData, "text/xml");
+
+			const coordinatesElement = xmlDoc.querySelector("LinearRing coordinates");
+			const coordinatesText = coordinatesElement.textContent.trim();
+			const coordinatePairs = coordinatesText.split(" ");
+
+			const coordinates = coordinatePairs.map(pair => {
+				const [lng, lat] = pair.split(",");
+				return { lat: parseFloat(lat), lng: parseFloat(lng) };
+			});
+
+			placeRedDots(coordinates);
+		}
+
+		function placeRedDots(coordinates) {
+			coordinates.forEach(coordinate => {
+				new google.maps.Marker({
+					position: coordinate,
+					map: map,
+					icon: {
+						path: google.maps.SymbolPath.CIRCLE,
+						fillColor: "red",
+						fillOpacity: 1,
+						strokeColor: "white",
+						strokeWeight: 2,
+						scale: 4,
+					},
+				});
+			});
+		}
 
 		function showInContentWindow(text) {
 			const sidebar = document.getElementById("sidebar");
@@ -124,7 +151,6 @@
 	}
 
 	window.initMap = initMap;
-
 </script>
 
 
