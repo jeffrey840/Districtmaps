@@ -1,6 +1,11 @@
 add zillow api to project
 fix the issue when running the app
 
+to chnage preconct line color, change
+
+<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style> red
+<Style><LineStyle><color>ff00ff00</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style> green
+
 
 
 all district
@@ -84,6 +89,16 @@ https://www.hccs.edu/media/houston-community-college/district/images/Single-Memb
 77489-
 77545-
 77459-
+
+======
+district 7 zipcodes
+update zipcodes
+77082
+77031
+77478
+77479
+======
+
 
 district 8
 https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-VIII-with-Zip-Codes.jpg
