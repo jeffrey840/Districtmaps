@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>withinBounds</title>
+</head>
+<body>
+
+<script type="module">
+  // Define the boundary constants
+  const center = { lat: 29.8284, lon: -95.4696 }; // This is roughly the center of ZIP 77080
+  const boundary = 0.09; // approximately 1 mile
+
+  const topLeft = { lat: center.lat + boundary, lon: center.lon - boundary };
+  const bottomRight = { lat: center.lat - boundary, lon: center.lon + boundary };
+
+  // Check if the given property is within the boundary
+  function isWithinBoundary(property) {
+    const lat = property.latitude;  // You might need to adjust these based on the actual structure of the Zillow API response
+    const lon = property.longitude;
+
+    return lat <= topLeft.lat &&
+            lat >= bottomRight.lat &&
+            lon >= topLeft.lon &&
+            lon <= bottomRight.lon;
+  }
+
+  async function fetchZillowData(zpid) {
+    const url = `https://zillow-com1.p.rapidapi.com/property?zpid=${zpid}`;
+    const options = {
+      method: 'GET',
+      headers: {
+        'X-RapidAPI-Key': '',  // Put your key here
+        'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+      }
+    };
+
+    try {
+      const response = await fetch(url, options);
+      const result = await response.json();
+
+      // Check if property is within boundary
+      if (isWithinBoundary(result)) {
+        console.log("Property is within the boundary:", result);
+      } else {
+        console.log("Property is outside the boundary.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  fetchZillowData(80517451);  // Fetch data for a given ZPID
+</script>
+
+
+</body>
+</html>
