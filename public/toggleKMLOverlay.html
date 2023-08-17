@@ -1,0 +1,70 @@
+<html>
+<head>
+	<title>Toggle KML Overlay</title>
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+	<link rel="stylesheet" type="text/css" href="../src/index.css" />
+
+</head>
+<body>
+<!--https://stackoverflow.com/questions/11147803/how-to-use-zip-code-instead-lat-and-lng-in-google-maps-api-->
+
+
+<div id="container">
+	<div id="map"></div>
+	<div id="sidebar"></div>
+</div>
+
+<button id="toggleButton">Toggle KML Overlay</button>
+
+
+
+<script type="module">
+	let map, kmlLayer;
+
+	function initMap() {
+		map = new google.maps.Map(document.getElementById("map"), {
+			zoom: 12,
+			center: { lat: 37.06, lng: -95.68 },
+		});
+
+		kmlLayer = new google.maps.KmlLayer({
+			url: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip77056.kml",
+			suppressInfoWindows: true,
+			map: map,
+		});
+
+		kmlLayer.addListener("click", (kmlEvent) => {
+			const text = kmlEvent.featureData.description;
+			showInContentWindow(text);
+		});
+
+		document.getElementById("toggleButton").addEventListener("click", toggleKML);
+	}
+
+	function toggleKML() {
+		if (kmlLayer.getMap() === null) {
+			kmlLayer.setMap(map);
+		} else {
+			kmlLayer.setMap(null);
+		}
+	}
+
+	function showInContentWindow(text) {
+		const sidebar = document.getElementById("sidebar");
+		sidebar.innerHTML = text;
+	}
+	window.initMap = initMap;
+
+
+</script>
+<!--  https://maps.googleapis.com/maps/api/js?key=GOOGLE_MAPS_API_KEY&callback=initMap -->
+<script
+		src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"
+		defer
+></script>
+</body>
+</html>
+
+
+

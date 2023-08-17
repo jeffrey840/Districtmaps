@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>displayingCoorWithRedDots</title>
+</head>
+<body>
+
+<script type="module">
+  function initMap() {
+    const map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 12,
+      center: { lat: 37.06, lng: -95.68 },
+    });
+
+    // KML Layer for zip77056
+    const kmlLayer = new google.maps.KmlLayer({
+      url: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip77056.kml",
+      suppressInfoWindows: true,
+      map: map,
+    });
+
+    kmlLayer.addListener("click", (kmlEvent) => {
+      const text = kmlEvent.featureData.description;
+      showInContentWindow(text);
+    });
+
+    // Load KML file using fetch
+    fetch("https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip77056.kml")
+            .then(response => response.text())
+            .then(data => parseKmlCoordinates(data))
+            .catch(error => console.error(error));
+
+    function parseKmlCoordinates(kmlData) {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(kmlData, "text/xml");
+
+      const coordinatesElement = xmlDoc.querySelector("LinearRing coordinates");
+      const coordinatesText = coordinatesElement.textContent.trim();
+      const coordinatePairs = coordinatesText.split(" ");
+
+      const coordinates = coordinatePairs.map(pair => {
+        const [lng, lat] = pair.split(",");
+        return { lat: parseFloat(lat), lng: parseFloat(lng) };
+      });
+
+      placeRedDots(coordinates);
+    }
+
+    function placeRedDots(coordinates) {
+      coordinates.forEach(coordinate => {
+        new google.maps.Marker({
+          position: coordinate,
+          map: map,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            fillColor: "red",
+            fillOpacity: 1,
+            strokeColor: "white",
+            strokeWeight: 2,
+            scale: 4,
+          },
+        });
+      });
+    }
+
+    function showInContentWindow(text) {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.innerHTML = text;
+    }
+  }
+
+  window.initMap = initMap;
+</script>
+
+
+</body>
+</html>
