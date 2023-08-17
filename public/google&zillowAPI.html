@@ -22,7 +22,7 @@
 		const options = {
 			method: 'GET',
 			headers: {
-				'X-RapidAPI-Key': 'YOUR_RAPID_API_KEY',  // Replace with your RapidAPI key for Zillow
+				'X-RapidAPI-Key': '',  // Replace with your RapidAPI key for Zillow
 				'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
 			}
 		};
@@ -53,7 +53,7 @@
 	}
 
 	// Fetch Zillow data and then initialize the map
-	fetchZillowData('SOME_ZPID')  // Replace 'SOME_ZPID' with a Zillow Property ID of your choice
+	fetchZillowData('27886237')  // Replace 'SOME_ZPID' with a Zillow Property ID of your choice
 		.then(data => {
 			if(data) {
 				initMap(data.latitude, data.longitude);
@@ -63,7 +63,7 @@
 
 <!-- Load Google Maps JavaScript API -->
 <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap">  <!-- Replace with your Google Maps API key -->
+        src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap">  <!-- Replace with your Google Maps API key -->
 </script>
 
 </body>

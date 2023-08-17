@@ -1,7 +1,7 @@
 add zillow api to project
 fix the issue when running the app
 
-to chnage preconct line color, change
+to change precinct line color, change
 
 <Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style> red
 <Style><LineStyle><color>ff00ff00</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style> green
