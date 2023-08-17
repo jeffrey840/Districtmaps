@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Zillow Listing on Google Maps</title>
+	<style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+	</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+	// Fetch data from Zillow API
+	async function fetchZillowData(zpid) {
+		const url = `https://zillow-com1.p.rapidapi.com/property?zpid=${zpid}`;
+		const options = {
+			method: 'GET',
+			headers: {
+				'X-RapidAPI-Key': 'YOUR_RAPID_API_KEY',  // Replace with your RapidAPI key for Zillow
+				'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+			}
+		};
+
+		try {
+			const response = await fetch(url, options);
+			const result = await response.json();
+			const latitude = result.latitude;
+			const longitude = result.longitude;
+
+			return { latitude, longitude };
+		} catch (error) {
+			console.error("Error fetching data from Zillow:", error);
+		}
+	}
+
+	// Initialize the Google Map
+	function initMap(lat, lng) {
+		const propertyLocation = { lat: lat, lng: lng };
+		const map = new google.maps.Map(document.getElementById('map'), {
+			zoom: 15,
+			center: propertyLocation
+		});
+		const marker = new google.maps.Marker({
+			position: propertyLocation,
+			map: map
+		});
+	}
+
+	// Fetch Zillow data and then initialize the map
+	fetchZillowData('SOME_ZPID')  // Replace 'SOME_ZPID' with a Zillow Property ID of your choice
+		.then(data => {
+			if(data) {
+				initMap(data.latitude, data.longitude);
+			}
+		});
+</script>
+
+<!-- Load Google Maps JavaScript API -->
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap">  <!-- Replace with your Google Maps API key -->
+</script>
+
+</body>
+</html>
