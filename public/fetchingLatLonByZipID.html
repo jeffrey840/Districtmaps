@@ -6,6 +6,36 @@
 </head>
 <body>
 
+
+
+<!--
+
+
+1. **Function `fetchZillowData(address, citystatezip, zwsId)`**:
+    - **Parameters**:
+      - `address`: The street address of the property.
+      - `citystatezip`: The city, state, and ZIP code of the property.
+      - `zwsId`: Zillow Web Services ID, a unique ID assigned to developers using Zillow's API.
+
+    - **Functionality**:
+      - Constructs the Zillow API endpoint URL using provided parameters.
+      - Uses `encodeURIComponent` to ensure that the address and city/state/ZIP parameters are safely encoded for URL use.
+      - Sends a `GET` request to the constructed URL.
+      - The response from Zillow is in XML format. This XML response is converted to text.
+      - The XML text is then converted to a JSON format using a hypothetical function called `convertXmlToJson(xmlText)`. Note that this function isn't defined in the provided script, and you would need an XML-to-JSON conversion library or write your own implementation for it to work.
+      - Extracts latitude and longitude values from the JSON response and logs them to the console.
+      - Returns an object containing the extracted latitude and longitude.
+
+2. **Usage Example**:
+    - Provides an example of how to call the `fetchZillowData` function.
+    - A placeholder `YOUR_ZWS_ID` is used for the Zillow Web Services ID (`zwsId`). This should be replaced with a real ZWS ID for the function to properly fetch data from Zillow.
+    - Calls `fetchZillowData` with a mock address and city/state/ZIP combination to showcase how the function can be used.
+
+
+
+
+-->
+
 <script type="module">
 
   async function fetchZillowData(address, citystatezip, zwsId) {

@@ -13,6 +13,35 @@
 </head>
 <body>
 
+
+<!--
+
+. **JavaScript**:
+
+   1. **Fetching Data from Zillow (`fetchZillowData`)**:
+      - This asynchronous function fetches property data from the Zillow API using a given `zpid` (Zillow Property ID).
+      - Once the data is fetched, it extracts and returns the `latitude` and `longitude` of the property.
+
+   2. **Initializing Google Map (`initMap`)**:
+      - This function initializes and displays the Google Map inside the `div` with id `map`.
+      - It takes in `latitude` and `longitude` as arguments and sets the map's center to the property's location.
+      - A marker representing the Zillow property is also added to the map at the specified coordinates.
+
+   3. **Execute the Process**:
+      - The script fetches data from Zillow using `fetchZillowData` for the property with ID `'27886237'`.
+      - Once the data is fetched and if valid, it initializes the Google Map centered at the property's location using `initMap`.
+
+4. **Load Google Maps JavaScript API**:
+   - At the bottom, the Google Maps JavaScript API is asynchronously loaded using a `<script>` tag.
+   - The `callback=initMap` means once the API is loaded, the `initMap` function will be called. However, since the map is actually initialized after the Zillow data fetch, this callback is harmless but redundant in this structure.
+   - The placeholder for the API key (`key=`) needs to be filled with a valid Google Maps API key for this to work.
+
+In essence, this HTML document serves as a mini-web application that fetches a property's geographic details from Zillow and then visualizes its location using the Google Maps API.
+
+
+
+-->
+
 <div id="map"></div>
 
 <script>
