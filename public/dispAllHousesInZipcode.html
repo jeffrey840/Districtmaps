@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Displaying all houses in zipcode</title>
+	<script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap" async defer></script>
+</head>
+
+<body>
+
+<div id="map" style="height: 500px; width: 100%;"></div>
+
+	<script>
+		let map;
+		function initMap(houses = []) {
+			map = new google.maps.Map(document.getElementById('map'), {
+				center: { lat: 29.8131, lng: -95.4648 }, // Rough coordinates for 77080
+				zoom: 12
+			});
+
+			const redMarker = {
+				path: google.maps.SymbolPath.CIRCLE,
+				fillColor: 'red',
+				fillOpacity: 1,
+				scale: 5,
+				strokeColor: 'red',
+				strokeWeight: 1
+			};
+
+			houses.forEach(house => {
+				new google.maps.Marker({
+					position: { lat: house.latitude, lng: house.longitude },
+					map: map,
+					icon: redMarker
+				});
+			});
+		}
+
+
+
+		async function fetchHouses() {
+			const url = 'https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=77080&home_type=Houses';
+			const options = {
+				method: 'GET',
+				headers: {
+					'X-RapidAPI-Key': '',
+					'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+				}
+			};
+
+			try {
+				const response = await fetch(url, options);
+				const data = await response.json();
+
+				console.log(data);  // Log the entire response to check its structure
+
+				if (data && data.props) {
+					const houses = data.props.map(house => {
+						if (house.latLong) {
+							return {
+								latitude: house.latLong.latitude,
+								longitude: house.latLong.longitude
+							};
+						}
+					}).filter(house => house); // Filter out undefined items
+					initMap(houses);
+				} else {
+					console.error('Unexpected response from Zillow API:', data);
+				}
+			} catch (error) {
+				console.error(error);
+			}
+
+			// try {
+			// 	const response = await fetch(url, options);
+			// 	const data = await response.json();
+			//
+			// 	if (data && data.homes) {
+			// 		const houses = data.homes.map(house => ({
+			// 			latitude: house.latLong.latitude,
+			// 			longitude: house.latLong.longitude
+			// 		}));
+			// 		initMap(houses);
+			// 	} else {
+			// 		console.error('Unexpected response from Zillow API:', data);
+			// 	}
+			// } catch (error) {
+			// 	console.error(error);
+			// }
+		}
+
+		window.onload = fetchHouses;
+
+	</script>
+</body>
+
+</html>
