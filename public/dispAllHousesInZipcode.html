@@ -3,16 +3,32 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>Displaying the first 30 houses in zipcode</title>
+	<title>Displaying all houses in zipcode</title>
 	<script src="https://maps.googleapis.com/maps/api/js?key=&callback=initialize" async defer></script>
 </head>
 
 <body>
 
+<div>
+	<!-- Zipcode Button -->
+	<button onclick="fetchHouses(1)">77080</button>
+</div>
+
 <div id="map" style="height: 500px; width: 100%;"></div>
+
+<!-- Pagination Buttons -->
+<div id="pagination">
+	<button onclick="fetchHouses(1)">1</button>
+	<button onclick="fetchHouses(2)">2</button>
+	<button onclick="fetchHouses(3)">3</button>
+	<!-- Add more buttons as needed -->
+</div>
+
+
 
 <script>
 	let map;
+	const ITEMS_PER_PAGE = 40;
 
 	function initMap(houses = []) {
 		map = new google.maps.Map(document.getElementById('map'), {
@@ -38,8 +54,8 @@
 		});
 	}
 
-	async function fetchHouses() {
-		const url = 'https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=77080&home_type=Houses';
+	async function fetchHouses(page = 1) {
+		const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=77080&home_type=Houses&page=${page}`;
 		const options = {
 			method: 'GET',
 			headers: {
@@ -52,19 +68,25 @@
 			const response = await fetch(url, options);
 			const data = await response.json();
 
-			console.log(data);  // Log the entire response to check its structure
-
 			if (data && data.props && data.props.length) {
-				const houses = data.props.slice(0, 41).map(house => {
+				const houses = data.props.map(house => {
 					return {
 						latitude: house.latitude,
 						longitude: house.longitude
 					};
 				});
 
-				console.log('Displaying 30 houses:', houses);
-
 				initMap(houses);
+
+				// Dynamically generate pagination buttons based on totalPages
+				const paginationContainer = document.getElementById('pagination');
+				paginationContainer.innerHTML = '';  // Clear existing buttons
+				for (let i = 1; i <= data.totalPages; i++) {
+					const btn = document.createElement('button');
+					btn.innerHTML = i;
+					btn.onclick = () => fetchHouses(i);
+					paginationContainer.appendChild(btn);
+				}
 			} else {
 				console.error('Unexpected response from Zillow API:', data);
 			}
@@ -75,10 +97,24 @@
 
 	// Initialize function to be called when Google Maps API is ready
 	function initialize() {
-		fetchHouses();
+		fetchHouses(1);
 	}
 
-</script>
-</body>
 
+</script>
+
+<!-- Add some basic styling for the pagination -->
+<style>
+    #pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    #pagination button {
+        margin: 0 5px;
+    }
+</style>
+
+</body>
 </html>
