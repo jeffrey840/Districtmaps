@@ -3,50 +3,32 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>Displaying all houses in zipcode</title>
+	<title>Displaying houses by zipcode</title>
 	<script src="https://maps.googleapis.com/maps/api/js?key=&callback=initialize" async defer></script>
-
-	<!-- Add some basic styling for the pagination -->
-	<style>
-        #pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        #pagination button {
-            margin: 0 5px;
-        }
-	</style>
-
 </head>
 
 <body>
 
-<div>
-	<!-- Zipcode Button -->
-	<button onclick="fetchHouses(1)">77080</button>
+<!-- Zipcode Buttons -->
+<div id="zipcodeButtons">
+	<button onclick="fetchHouses('77080', 1)">77080</button>
+	<button onclick="fetchHouses('77056', 1)">77056</button>
 </div>
 
+<!-- Map Component -->
 <div id="map" style="height: 500px; width: 100%;"></div>
 
-<!-- Pagination Buttons -->
-<div id="pagination">
-	<button onclick="fetchHouses(1)">1</button>
-	<button onclick="fetchHouses(2)">2</button>
-	<button onclick="fetchHouses(3)">3</button>
-	<!-- Add more buttons as needed -->
-</div>
-
-
+<!-- Pagination Component -->
+<div id="pagination"></div>
 
 <script>
 	let map;
-	const ITEMS_PER_PAGE = 40;
+	let currentZipCode = '77080'; // Default Zipcode
+	const defaultLatLng = { lat: 29.8131, lng: -95.4648 }; // Default coordinates for 77080
 
-	function initMap(houses = []) {
+	function initMap(houses = [], center = defaultLatLng) {
 		map = new google.maps.Map(document.getElementById('map'), {
-			center: { lat: 29.8131, lng: -95.4648 }, // Rough coordinates for 77080
+			center: center,
 			zoom: 12
 		});
 
@@ -68,12 +50,13 @@
 		});
 	}
 
-	async function fetchHouses(page = 1) {
-		const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=77080&home_type=Houses&page=${page}`;
+	async function fetchHouses(zipCode, page = 1) {
+		currentZipCode = zipCode;
+		const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}&home_type=Houses&page=${page}`;
 		const options = {
 			method: 'GET',
 			headers: {
-				'X-RapidAPI-Key': '',
+				'X-RapidAPI-Key': '', // replace with your key
 				'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
 			}
 		};
@@ -91,16 +74,7 @@
 				});
 
 				initMap(houses);
-
-				// Dynamically generate pagination buttons based on totalPages
-				const paginationContainer = document.getElementById('pagination');
-				paginationContainer.innerHTML = '';  // Clear existing buttons
-				for (let i = 1; i <= data.totalPages; i++) {
-					const btn = document.createElement('button');
-					btn.innerHTML = i;
-					btn.onclick = () => fetchHouses(i);
-					paginationContainer.appendChild(btn);
-				}
+				handlePagination(data.totalPages);
 			} else {
 				console.error('Unexpected response from Zillow API:', data);
 			}
@@ -109,15 +83,21 @@
 		}
 	}
 
-	// Initialize function to be called when Google Maps API is ready
-	function initialize() {
-		fetchHouses(1);
+	function handlePagination(totalPages) {
+		const paginationContainer = document.getElementById('pagination');
+		paginationContainer.innerHTML = '';  // Clear existing buttons
+		for (let i = 1; i <= totalPages; i++) {
+			const btn = document.createElement('button');
+			btn.innerHTML = i;
+			btn.onclick = () => fetchHouses(currentZipCode, i);
+			paginationContainer.appendChild(btn);
+		}
 	}
 
+	function initialize() {
+		fetchHouses(currentZipCode, 1);
+	}
 
 </script>
-
-
-
 </body>
 </html>
