@@ -1,26 +1,14 @@
-
-
 import React from 'react';
 
-const App = () => {
+function App() {
 	return (
-		<div>
-			<h1>test</h1>
+		<div className="app">
+			{/* Your components and views */}
+
+			<p>hello world</p>
 		</div>
+
 	);
-};
+}
 
 export default App;
-
-
-
-
-
-
-
-
-
-
-
-
-
