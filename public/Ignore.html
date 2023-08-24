@@ -1,0 +1,40 @@
+
+
+async function fetchGeoJson(url) {
+try {
+const response = await fetch(url);
+const data = await response.json();
+console.log("Fetched GeoJSON data:", data); // Log the fetched data
+return data;
+} catch (error) {
+console.error("Error fetching GeoJSON data:", error);
+}
+}
+
+function handleGeoJson(map, geoJsonData) {
+map.data.addGeoJson(geoJsonData);
+console.log("Added GeoJSON to map:", geoJsonData); // Log after adding to the map
+
+const centroid = turf.centroid(geoJsonData);
+return {
+lat: centroid.geometry.coordinates[1],
+lng: centroid.geometry.coordinates[0]
+};
+}
+
+// ... (no change in addMarker function)
+
+async function initMap() {
+const map = new google.maps.Map(document.getElementById('map'), {
+zoom: 10,
+center: {lat: 29.76, lng: -95.37}
+});
+
+for (const zipData of zipCodesData) {
+const geoJsonData = await fetchGeoJson(zipData.geoJsonUrl);
+if (geoJsonData) {
+const centroidCoords = handleGeoJson(map, geoJsonData);
+addMarker(map, centroidCoords, zipData.zip);
+}
+}
+}

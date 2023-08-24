@@ -1,16 +1,17 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 	<meta charset="UTF-8">
-	<title>ImplementingGeoJson</title>
+	<title>Multiple Zip Codes with GeoJSON</title>
 	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsuN-9jE_5TiIMb_-PfH8V8j7FkXg0PVQ&callback=initMap" async defer></script>
 	<style>
         #map {
-            height: 400px;
+            height: 100vh;
             width: 100%;
         }
 	</style>
@@ -20,25 +21,52 @@
 <div id="map"></div>
 
 <script>
+	const zipCodesData = [
+
+		{
+			zip: "77082",
+			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/test/zip_77082.geojson"
+		},
+		// {
+		// 	zip: "77057",
+		// 	geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip_77057.geojson"
+		// },
+		{
+			zip: "77056",
+			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip_77056.geojson"
+		},
+
+
+
+	];
+
 	async function fetchGeoJson(url) {
 		try {
 			const response = await fetch(url);
-			return await response.json();
+			const data = await response.json();
+			console.log("Fetched GeoJSON data:", data); // Log the fetched data
+			return data;
 		} catch (error) {
 			console.error("Error fetching GeoJSON data:", error);
 		}
 	}
 
-	function handleGeoJson(map, geoJsonData) {
-		map.data.addGeoJson(geoJsonData); // Overlay GeoJSON data on map
+	function handleGeoJson(map, geoJsonData, fillColor) {
+		map.data.addGeoJson(geoJsonData);
+
+		// Optional: Differentiate overlays by color
+		map.data.setStyle({
+			fillColor: fillColor,
+			strokeWeight: 1
+		});
 
 		const centroid = turf.centroid(geoJsonData);
-		const centroidCoords = {
+		return {
 			lat: centroid.geometry.coordinates[1],
 			lng: centroid.geometry.coordinates[0]
 		};
-		return centroidCoords;
 	}
+
 
 	function addMarker(map, position, label) {
 		new google.maps.Marker({
@@ -51,7 +79,7 @@
 			},
 			label: {
 				text: label,
-				color: 'red',
+				color: 'black',
 				fontSize: '20px',
 				fontWeight: 'bold'
 			}
@@ -59,25 +87,50 @@
 	}
 
 	async function initMap() {
+
 		const map = new google.maps.Map(document.getElementById('map'), {
-			zoom: 14
+			zoom: 10,
+			center: {lat: 29.76, lng: -95.37}
 		});
 
-		const geoJsonUrl = "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip_77056.geojson";
-		const geoJsonData = await fetchGeoJson(geoJsonUrl);
 
-		if (geoJsonData) {
-			const centroidCoords = handleGeoJson(map, geoJsonData);
-
-			addMarker(map, centroidCoords, '77076');
-
-			// Adjust the initial map center
-			map.setCenter(centroidCoords);
-		} else {
-			console.error("Unable to initialize map due to missing GeoJSON data.");
+		// Manually fetch and display first GeoJSON
+		const geoJsonData1 = await fetchGeoJson(zipCodesData[0].geoJsonUrl);
+		if (geoJsonData1) {
+			const centroidCoords1 = handleGeoJson(map, geoJsonData1);
+			addMarker(map, centroidCoords1, zipCodesData[0].zip);
 		}
+
+		// Manually fetch and display second GeoJSON
+		const geoJsonData2 = await fetchGeoJson(zipCodesData[1].geoJsonUrl);
+		if (geoJsonData2) {
+			const centroidCoords2 = handleGeoJson(map, geoJsonData2);
+			addMarker(map, centroidCoords2, zipCodesData[1].zip);
+		}
+
+		const geoJsonData3 = await fetchGeoJson(zipCodesData[2].geoJsonUrl);
+		if (geoJsonData2) {
+			const centroidCoords2 = handleGeoJson(map, geoJsonData2);
+			addMarker(map, centroidCoords2, zipCodesData[2].zip);
+		}
+
+		const centroidCoords1 = handleGeoJson(map, geoJsonData1, '#FF0000'); // Red
+		const centroidCoords2 = handleGeoJson(map, geoJsonData2, '#00FF00'); // Green
+		const centroidCoords3 = handleGeoJson(map, geoJsonData2, '#090000'); // Green
+
 	}
+
+
+
 </script>
 </body>
 
 </html>
+
+
+
+
+
+
+
+
