@@ -1,12 +1,83 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<title>ImplementingGeoJson</title>
+	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsuN-9jE_5TiIMb_-PfH8V8j7FkXg0PVQ&callback=initMap" async defer></script>
+	<style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+	</style>
 </head>
+
 <body>
+<div id="map"></div>
 
+<script>
+	async function fetchGeoJson(url) {
+		try {
+			const response = await fetch(url);
+			return await response.json();
+		} catch (error) {
+			console.error("Error fetching GeoJSON data:", error);
+		}
+	}
 
+	function handleGeoJson(map, geoJsonData) {
+		map.data.addGeoJson(geoJsonData); // Overlay GeoJSON data on map
 
+		const centroid = turf.centroid(geoJsonData);
+		const centroidCoords = {
+			lat: centroid.geometry.coordinates[1],
+			lng: centroid.geometry.coordinates[0]
+		};
+		return centroidCoords;
+	}
+
+	function addMarker(map, position, label) {
+		new google.maps.Marker({
+			position: position,
+			map: map,
+			icon: {
+				url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/2GeolcAAAAASUVORK5CYII=', // Transparent 1x1 pixel
+				size: new google.maps.Size(1, 1),
+				scaledSize: new google.maps.Size(1, 1)
+			},
+			label: {
+				text: label,
+				color: 'red',
+				fontSize: '20px',
+				fontWeight: 'bold'
+			}
+		});
+	}
+
+	async function initMap() {
+		const map = new google.maps.Map(document.getElementById('map'), {
+			zoom: 14
+		});
+
+		const geoJsonUrl = "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip_77056.geojson";
+		const geoJsonData = await fetchGeoJson(geoJsonUrl);
+
+		if (geoJsonData) {
+			const centroidCoords = handleGeoJson(map, geoJsonData);
+
+			addMarker(map, centroidCoords, '77076');
+
+			// Adjust the initial map center
+			map.setCenter(centroidCoords);
+		} else {
+			console.error("Unable to initialize map due to missing GeoJSON data.");
+		}
+	}
+</script>
 </body>
+
 </html>
