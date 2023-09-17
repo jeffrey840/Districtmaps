@@ -50,6 +50,8 @@
 		});
 	}
 
+
+
 	async function fetchHouses(zipCode, page = 1) {
 		currentZipCode = zipCode;
 		const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}&home_type=Houses&page=${page}`;
