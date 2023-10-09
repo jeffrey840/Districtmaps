@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,51 +18,46 @@
 <div id="map"></div>
 
 <script>
-	const zipCodesData = [
-
-		// overay does not display on the page
-
-
+	const zipCodesData = [{
+		zip: "77056",
+		geoJsonUrl: "zip_56.geojson"
+	},
 		{
 			zip: "77057",
-			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip_77057.geojson"
-		},
-		{
-			zip: "77056",
-			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/jeffrey840.github.io/main/ignore/zip_77056.geojson"
-		},
-
-
-
+			geoJsonUrl: "zip_57.geojson"
+		}
 	];
 
 	async function fetchGeoJson(url) {
 		try {
 			const response = await fetch(url);
-			const data = await response.json();
-			console.log("Fetched GeoJSON data:", data); // Log the fetched data
-			return data;
+			return await response.json();
 		} catch (error) {
 			console.error("Error fetching GeoJSON data:", error);
 		}
 	}
 
+	// Add fillColor parameter to handleGeoJson
 	function handleGeoJson(map, geoJsonData, fillColor) {
-		map.data.addGeoJson(geoJsonData);
+		// Check if the provided data is a valid GeoJSON feature collection
+		if (geoJsonData && geoJsonData.type === "FeatureCollection" && geoJsonData.features) {
+			map.data.addGeoJson(geoJsonData);
+			map.data.setStyle({
+				fillColor: fillColor,
+				fillOpacity: 0.5,// Use the provided fillColor
+				strokeWeight: 1
+			});
 
-		// Optional: Differentiate overlays by color
-		map.data.setStyle({
-			fillColor: fillColor,
-			strokeWeight: 1
-		});
-
-		const centroid = turf.centroid(geoJsonData);
-		return {
-			lat: centroid.geometry.coordinates[1],
-			lng: centroid.geometry.coordinates[0]
-		};
+			const centroid = turf.centroid(geoJsonData);
+			return {
+				lat: centroid.geometry.coordinates[1],
+				lng: centroid.geometry.coordinates[0]
+			};
+		} else {
+			console.error("Invalid GeoJSON data:", geoJsonData);
+			return null;
+		}
 	}
-
 
 	function addMarker(map, position, label) {
 		new google.maps.Marker({
@@ -86,50 +78,27 @@
 	}
 
 	async function initMap() {
-
 		const map = new google.maps.Map(document.getElementById('map'), {
 			zoom: 10,
-			center: {lat: 29.76, lng: -95.37}
+			center: {
+				lat: 29.76,
+				lng: -95.37
+			}
 		});
 
+		const colors = ['blue', 'red'];  // Array of colors
 
-		// Manually fetch and display first GeoJSON
-		const geoJsonData1 = await fetchGeoJson(zipCodesData[0].geoJsonUrl);
-		if (geoJsonData1) {
-			const centroidCoords1 = handleGeoJson(map, geoJsonData1);
-			addMarker(map, centroidCoords1, zipCodesData[0].zip);
+		for (const [index, zipData] of zipCodesData.entries()) {
+			const geoJsonData = await fetchGeoJson(zipData.geoJsonUrl);
+			if (geoJsonData) {
+				const centroidCoords = handleGeoJson(map, geoJsonData, colors[index]);
+				addMarker(map, centroidCoords, zipData.zip);
+			}
+			console.log(geoJsonData);
 		}
-
-		// Manually fetch and display second GeoJSON
-		const geoJsonData2 = await fetchGeoJson(zipCodesData[1].geoJsonUrl);
-		if (geoJsonData2) {
-			const centroidCoords2 = handleGeoJson(map, geoJsonData2);
-			addMarker(map, centroidCoords2, zipCodesData[1].zip);
-		}
-
-		const geoJsonData3 = await fetchGeoJson(zipCodesData[2].geoJsonUrl);
-		if (geoJsonData2) {
-			const centroidCoords2 = handleGeoJson(map, geoJsonData2);
-			addMarker(map, centroidCoords2, zipCodesData[2].zip);
-		}
-
-		const centroidCoords1 = handleGeoJson(map, geoJsonData1, '#FF0000'); // Red
-		const centroidCoords2 = handleGeoJson(map, geoJsonData2, '#00FF00'); // Green
-		const centroidCoords3 = handleGeoJson(map, geoJsonData2, '#090000'); // Green
-
 	}
-
-
 
 </script>
 </body>
 
 </html>
-
-
-
-
-
-
-
-
