@@ -29,6 +29,17 @@
 		}
 	];
 
+	// works with github url and locally
+	// {
+	// 	zip: "77057",
+	// 	geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip_77057.geojson"
+	// },
+	// {
+	// 	zip: "77056",
+	// 		geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip_77056.geojson"
+	// },
+
+
 	async function fetchGeoJson(url) {
 		try {
 			const response = await fetch(url);
