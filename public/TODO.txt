@@ -188,5 +188,3 @@ Here's a user story to describe how a user would interact with your application:
    - Given I am interested in a listing,
    - When I decide I want more information,
    - Then I should be able to contact the real estate agent directly from the listing details page.
-
-
