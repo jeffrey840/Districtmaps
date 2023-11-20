@@ -107,14 +107,12 @@
 				});
 			});
 		}
-
 		// Function to display KML data content in a sidebar (assumes a sidebar DOM element exists)
 		function showInContentWindow(text) {
 			const sidebar = document.getElementById("sidebar");
 			sidebar.innerHTML = text;
 		}
 	}
-
 	// Expose the initMap function to the global scope to ensure it's callable by the Google Maps API callback
 	window.initMap = initMap;
 
