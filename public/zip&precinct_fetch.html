@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Displaying Houses by Multiple Zipcodes</title>
+	<!-- Import Google Maps JS API -->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsuN-9jE_5TiIMb_-PfH8V8j7FkXg0PVQ&callback=initialize" async defer></script>
+	<style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+	</style>
+</head>
+<body>
+<!-- Map component where houses will be plotted -->
+<div id="map"></div>
+
+<script>
+	let map;
+	const zipCodes = ["77013", "77016", "77018", "77022", "77037", "77076", "77088", "77093", "77020", "77026", "77028", "77029", "77050", "77078", "77091", "77092"];
+
+	function initMap() {
+		// Initialize map with default location
+		map = new google.maps.Map(document.getElementById('map'), {
+			center: { lat: 29.8131, lng: -95.4648 },
+			zoom: 11
+		});
+
+		// Fetch and display houses for each zipcode
+		zipCodes.forEach(zipCode => {
+			fetchHouses(zipCode);
+		});
+	}
+
+	async function fetchHouses(zipCode) {
+		const apiKey = '4b79262d6emsh7cc3f4048fc7718p12b945jsndb86ef3ab993'; // Replace with your API key
+		let allHouses = [];
+
+		async function fetchPage(pageNumber) {
+			const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}&home_type=Houses&page=${pageNumber}`;
+			const options = {
+				method: 'GET',
+				headers: {
+					'X-RapidAPI-Key': apiKey,
+					'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+				}
+			};
+
+			try {
+				const response = await fetch(url, options);
+				const data = await response.json();
+				return data;
+			} catch (error) {
+				console.error(`Error fetching houses for zipcode ${zipCode}:`, error);
+				return null; // Return null in case of an error
+			}
+		}
+
+		// Fetch the first page to get total page count
+		const firstPageData = await fetchPage(1);
+		if (firstPageData && firstPageData.totalPages) {
+			allHouses = allHouses.concat(firstPageData.props);
+
+			for (let page = 2; page <= firstPageData.totalPages; page++) {
+				const pageData = await fetchPage(page);
+				if (pageData && pageData.props) {
+					allHouses = allHouses.concat(pageData.props);
+				}
+			}
+
+			// After fetching all pages, display the houses on the map
+			const housesToDisplay = allHouses.map(house => ({
+				latitude: house.latitude,
+				longitude: house.longitude
+			}));
+			displayHousesOnMap(housesToDisplay);
+		}
+	}
+
+	// Call this function to start fetching houses for a specific ZIP code
+	fetchHouses('77013'); // Example ZIP code
+
+	function displayHousesOnMap(houses) {
+		const redMarker = {
+			path: google.maps.SymbolPath.CIRCLE,
+			fillColor: 'red',
+			fillOpacity: 1,
+			scale: 5,
+			strokeColor: 'red',
+			strokeWeight: 1
+		};
+
+		houses.forEach(house => {
+			new google.maps.Marker({
+				position: { lat: house.latitude, lng: house.longitude },
+				map: map,
+				icon: redMarker
+			});
+		});
+	}
+
+	// Function to be called when Google Maps API is loaded
+	function initialize() {
+		initMap();
+	}
+</script>
+</body>
+</html>
