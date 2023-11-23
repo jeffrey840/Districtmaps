@@ -1,0 +1,33 @@
+// Zillow API Documentation
+
+// Required Header Parameters
+X-RapidAPI-Host: STRING - zillow-com1.p.rapidapi.com (REQUIRED)
+
+// Optional Parameters
+
+// location: STRING (e.g., 77080) - Location details, address, county, neighborhood, or Zip code.
+// It is required if the polygon or coordinates are empty.
+// Max length: 100
+
+// page: NUMBER (OPTIONAL) - Page number if the previous response totalPages > 1. Max value is 20.
+
+// To access more data, you can break down your request by dividing it into price groups using the minPrice and maxPrice parameters.
+// For example, 0 - 100,000, 100,001 - 500,000, 500,001 - 800,000, etc.
+
+// status_type: ENUM (OPTIONAL)
+// home_type: STRING (OPTIONAL) - Property type, comma-separated, or empty for all types.
+
+// For Rent, Townhomes, Houses, Apartments_Condos_Co-ops, etc.
+// For others: Multi-family, Apartments, Houses, Manufactured, Condos, LotsLand, Townhomes
+
+// sort: STRING (OPTIONAL) - Sort options vary based on status_type.
+
+// polygon: STRING (OPTIONAL) - Format: lon lat,lon1 lat1,lon2 lat2. Required if the location or coordinates are empty. The last pair must be the same as the first pair.
+
+// Additional optional filtering parameters:
+// minPrice, maxPrice, rentMinPrice, rentMaxPrice, bathsMin, bathsMax, bedsMin, bedsMax, sqftMin, sqftMax, buildYearMin, buildYearMax,
+// daysOn, soldInLast, isBasementFinished, isBasementUnfinished, isPendingUnderContract, isAcceptingBackupOffers, isComingSoon,
+// otherListings, isNewConstruction, keywords, lotSizeMin, lotSizeMax, saleByAgent, saleByOwner, isForSaleForeclosure, isWaterfront,
+// hasPool, hasAirConditioning, isCityView, isMountainView, isWaterView, isParkView, isOpenHousesOnly, is3dHome, coordinates, hoa,
+// includeHomesWithNoHoaData, isAuction, schools, schoolsRating, includeUnratedSchools, hasGarage, parkingSpots,
+// isForeclosed, isPreForeclosure

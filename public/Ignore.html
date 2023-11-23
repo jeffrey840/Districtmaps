@@ -1,0 +1,55 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Displaying Houses by Multiple Zipcodes</title>
+	<!-- Import Google Maps JS API -->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsuN-9jE_5TiIMb_-PfH8V8j7FkXg0PVQ&callback=initialize" async defer></script>
+
+</head>
+
+<body>
+<!-- Map component where houses will be plotted -->
+<div id="map" style="height: 500px; width: 100%;"></div>
+
+<script>
+	let map;
+	const zipCodes = ["77013", "77016", "77018", "77022", "77037", "77076", "77088", "77093", "77020", "77026", "77028", "77029", "77050", "77078", "77091", "77092"];
+
+	function initMap() {
+		map = new google.maps.Map(document.getElementById('map'), {
+			center: { lat: 29.8131, lng: -95.4648 },
+			zoom: 11
+		});
+
+		processZipCodes(zipCodes);
+	}
+
+	async function processZipCodes(zipCodes) {
+		for (const zipCode of zipCodes) {
+			await fetchHouses(zipCode);
+			await delay(500); // Delay for 500 milliseconds
+		}
+	}
+
+	async function fetchHouses(zipCode) {
+		// ... Existing fetchHouses code ...
+	}
+
+	function delay(ms) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
+	function displayHousesOnMap(houses) {
+		// ... Existing displayHousesOnMap code ...
+	}
+
+	window.initialize = initMap;
+</script>
+</body>
+
+
+
+</html>
