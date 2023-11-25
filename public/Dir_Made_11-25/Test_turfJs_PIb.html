@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>GeoJSON, Turf.js, and Google Maps Example</title>
+	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsuN-9jE_5TiIMb_-PfH8V8j7FkXg0PVQ"></script>
+	<style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+	</style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+	let map;
+
+	function initMap(geoJsonData, pointCoordinates) {
+		// Initialize the map centered on the point
+		map = new google.maps.Map(document.getElementById('map'), {
+			zoom: 12,
+			center: { lat: pointCoordinates[1], lng: pointCoordinates[0] }
+		});
+
+		// Display the GeoJSON polygon on the map
+		map.data.addGeoJson(geoJsonData);
+
+		// Create a marker for the point
+		new google.maps.Marker({
+			position: { lat: pointCoordinates[1], lng: pointCoordinates[0] },
+			map: map,
+			title: 'Point Location'
+		});
+	}
+
+	async function fetchGeoJson(url) {
+		try {
+			const response = await fetch(url);
+			return await response.json();
+		} catch (error) {
+			console.error("Error fetching GeoJSON data:", error);
+			return null;
+		}
+	}
+
+	async function checkPointInGeoJsonPolygon(geoJsonUrl, pointCoordinates) {
+		const geoJsonData = await fetchGeoJson(geoJsonUrl);
+
+		if (geoJsonData && geoJsonData.features) {
+			const polygon = geoJsonData.features[0].geometry;
+			const point = turf.point(pointCoordinates);
+			const isInside = turf.booleanPointInPolygon(point, polygon);
+
+			// Initialize the map with the GeoJSON data and the point
+			initMap(geoJsonData, pointCoordinates);
+
+			alert(`Is the point inside the GeoJSON polygon? ${isInside}`);
+		} else {
+			alert('Failed to load or process GeoJSON data.');
+		}
+	}
+
+	const geoJsonUrl = 'https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/finished_zip_prec_dis_2_outline.geojson';
+	const pointCoordinates = [-95.323, 29.842912];
+	// this si inside teh overlay
+
+	checkPointInGeoJsonPolygon(geoJsonUrl, pointCoordinates);
+</script>
+</body>
+</html>
