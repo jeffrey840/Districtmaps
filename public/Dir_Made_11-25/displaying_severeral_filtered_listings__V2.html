@@ -18,22 +18,15 @@
 <script>
 	let map;
 	const zipCodes = [
-		"77450",
-		"77094",
-		"77077",
-		"77079",
-		"77042",
-		"77024",
-		"77063",
-		"77057",
-		"77056",
-		"77027",
-		"77072",
-		"77083",
-		"77082"
+		"77081",
+		"77007",
+		"77008",
+		"77018",
+		"77078"
+
 	];
 	// Add your list of zip codes here
-	const largeBoundaryGeoJsonUrl = "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/dis_6_prog_1141.geojson";
+	const largeBoundaryGeoJsonUrl = "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_1.geojson";
 
 	async function initialize() {
 		const largeBoundaryGeoJson = await fetchGeoJson(largeBoundaryGeoJsonUrl);
