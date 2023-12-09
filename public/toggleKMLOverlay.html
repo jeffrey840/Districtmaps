@@ -1,0 +1,104 @@
+<html>
+<head>
+	<title>Toggle KML Overlay</title>
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+	<link rel="stylesheet" type="text/css" href="../src/index.css" />
+
+</head>
+<body>
+<!--https://stackoverflow.com/questions/11147803/how-to-use-zip-code-instead-lat-and-lng-in-google-maps-api-->
+
+
+<div id="container">
+	<div id="map"></div>
+	<div id="sidebar"></div>
+</div>
+
+<button id="toggleButton">Toggle KML Overlay</button>
+
+
+<!--
+
+
+ **JavaScript**:
+
+   1. **Variables Initialization**:
+      - `map`: Represents the Google Map.
+      - `kmlLayer`: Represents the KML layer added to the Google Map.
+
+   2. **Map Initialization (`initMap` function)**:
+      - The Google Map is initialized with a default zoom level and center point.
+      - A KML layer is added to the map. The KML file's URL points to a raw GitHub link.
+      - An event listener is added to the KML layer to handle clicks. When a KML feature (a specific section defined in the KML) is clicked, it retrieves a description from the KML and displays it in the `sidebar` `div`.
+      - Another event listener is attached to the "Toggle KML Overlay" button. This allows users to show or hide the KML layer on the map.
+
+   3. **Toggle KML (`toggleKML` function)**:
+      - This function checks whether the KML layer is currently shown on the map. If it is, it will hide it. If not, it will show it.
+
+   4. **Display KML Feature Info (`showInContentWindow` function)**:
+      - This function receives text as an argument (the KML feature description) and sets it as the content of the `sidebar` `div`.
+
+   5. **Expose `initMap` to the global context**:
+      - The `initMap` function is assigned to `window.initMap` to make it globally accessible. This is necessary since the Google Maps script will call this function as its callback after loading.
+
+ **Load Google Maps JavaScript API**:
+   - The Google Maps JavaScript API is loaded asynchronously using a script tag.
+   - The `callback=initMap` ensures that once the API is fully loaded, the `initMap` function will be executed to initialize the map.
+   - The placeholder for the API key (`key=`) should be replaced with a valid Google Maps API key for the script to work.
+
+
+
+
+-->
+
+
+<script type="module">
+	let map, kmlLayer;
+
+	function initMap() {
+		map = new google.maps.Map(document.getElementById("map"), {
+			zoom: 12,
+			center: { lat: 37.06, lng: -95.68 },
+		});
+
+		kmlLayer = new google.maps.KmlLayer({
+			url: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zip77056.kml",
+			suppressInfoWindows: true,
+			map: map,
+		});
+
+		kmlLayer.addListener("click", (kmlEvent) => {
+			const text = kmlEvent.featureData.description;
+			showInContentWindow(text);
+		});
+
+		document.getElementById("toggleButton").addEventListener("click", toggleKML);
+	}
+
+	function toggleKML() {
+		if (kmlLayer.getMap() === null) {
+			kmlLayer.setMap(map);
+		} else {
+			kmlLayer.setMap(null);
+		}
+	}
+
+	function showInContentWindow(text) {
+		const sidebar = document.getElementById("sidebar");
+		sidebar.innerHTML = text;
+	}
+	window.initMap = initMap;
+
+
+</script>
+<!--  https://maps.googleapis.com/maps/api/js?key=GOOGLE_MAPS_API_KEY&callback=initMap -->
+<script
+		src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"
+		defer
+></script>
+</body>
+</html>
+
+
+

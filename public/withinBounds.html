@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>withinBounds</title>
+</head>
+<body>
+
+<!--
+
+This script is a module that determines if a specific property from Zillow is within a given boundary (which is approximately a square mile around a central point in ZIP 77080). Here's the breakdown:
+
+1. **Boundary Constants**:
+    - `center`: Specifies a central point with latitude and longitude, roughly corresponding to the center of ZIP code 77080.
+    - `boundary`: Defines the boundary size as 0.09 degrees, which approximates a mile.
+    - Using the `center` and `boundary`, the top-left (`topLeft`) and bottom-right (`bottomRight`) coordinates of the square boundary are calculated.
+
+2. **Function `isWithinBoundary(property)`**:
+    - Checks if a given property (identified by its latitude and longitude) lies within the defined square boundary.
+    - Returns `true` if the property is inside the boundary and `false` otherwise.
+
+3. **Function `fetchZillowData(zpid)`**:
+    - This asynchronous function fetches property data from Zillow's API.
+    - The `zpid` (Zillow Property ID) is passed as a parameter to the function to identify the specific property.
+    - The function makes a GET request to the Zillow API using the provided `zpid`, including appropriate headers (like the RapidAPI key).
+    - Once data is received from Zillow, the function checks if the fetched property is within the previously defined boundary using the `isWithinBoundary` function.
+    - Depending on the result, it logs whether the property is inside or outside the boundary.
+
+4. **Script Execution**:
+    - Calls the `fetchZillowData` function with a sample ZPID (`80517451`), initiating the entire process of fetching the property details and checking its location relative to the boundary.
+
+In summary, this script fetches property details from Zillow using a specified ZPID and then checks if the property is located within a predefined square boundary around the center of ZIP 77080.
+
+-->
+
+
+<script type="module">
+  // Define the boundary constants
+  const center = { lat: 29.8284, lon: -95.4696 }; // This is roughly the center of ZIP 77080
+  const boundary = 0.09; // approximately 1 mile
+
+  const topLeft = { lat: center.lat + boundary, lon: center.lon - boundary };
+  const bottomRight = { lat: center.lat - boundary, lon: center.lon + boundary };
+
+  // Check if the given property is within the boundary
+  function isWithinBoundary(property) {
+    const lat = property.latitude;  // You might need to adjust these based on the actual structure of the Zillow API response
+    const lon = property.longitude;
+
+    return lat <= topLeft.lat &&
+            lat >= bottomRight.lat &&
+            lon >= topLeft.lon &&
+            lon <= bottomRight.lon;
+  }
+
+  async function fetchZillowData(zpid) {
+    const url = `https://zillow-com1.p.rapidapi.com/property?zpid=${zpid}`;
+    const options = {
+      method: 'GET',
+      headers: {
+        'X-RapidAPI-Key': '',  // Put your key here
+        'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+      }
+    };
+
+    try {
+      const response = await fetch(url, options);
+      const result = await response.json();
+
+      // Check if property is within boundary
+      if (isWithinBoundary(result)) {
+        console.log("Property is within the boundary:", result);
+      } else {
+        console.log("Property is outside the boundary.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  fetchZillowData(80517451);  // Fetch data for a given ZPID
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>fourCoordinates</title>
+</head>
+<body>
+
+<!--
+This script processes a list of latitude-longitude coordinate pairs to determine the northernmost, southernmost, westernmost, and easternmost points among them. Here's a brief description:
+
+1. **Coordinates Array Initialization**:
+    - A long string of coordinates (latitude, longitude, and altitude in this case) is provided.
+    - The coordinates are split by space (`split(' ')`) to separate each coordinate pair.
+    - The `map` function then processes each coordinate string. For each string:
+        - The string is split by a comma (`split(',')`), creating an array of the three values: latitude, longitude, and altitude.
+        - The three values are converted into numbers (`map(Number)`).
+        - An object is created with the latitude and longitude values, and returned. This results in an array of coordinate objects.
+
+2. **Initialization of Extremal Points**:
+    - Four variables (`northMost`, `southMost`, `westMost`, `eastMost`) are initialized to the first coordinate object in the array. These will be used to keep track of the extremal (i.e., furthest in a specific direction) coordinates as the script processes each coordinate.
+
+3. **Determining Extremal Points**:
+    - The script then iterates through each coordinate object in the `coordinates` array using the `forEach` method.
+    - For each coordinate object, it checks if it's further north, south, west, or east than the currently known extremal coordinates. If so, it updates the appropriate extremal variable.
+
+4. **Console Output**:
+    - Finally, the script logs the determined northernmost, southernmost, westernmost, and easternmost coordinate points to the console.
+
+In essence, this script finds and logs the boundary coordinates of the provided set of points.
+
+-->
+
+
+<script>
+
+  const coordinates = `-95.480128,29.730187,0.0 -95.480313,29.728819,0.0 -95.476414,29.728838,0.0 -95.47642,29.725724,0.0 -95.471465,29.725794,0.0 -95.472321,29.723552,0.0 -95.469764,29.723561,0.0 -95.468206,29.725599,0.0 -95.460395,29.726212,0.0 -95.460397,29.72634,0.0 -95.460413,29.730399,0.0 -95.458307,29.740943,0.0 -95.458711,29.740919,0.0 -95.456857,29.747894,0.0 -95.458956,29.750269,0.0 -95.456306,29.750301,0.0 -95.455715,29.751801,0.0 -95.455722,29.759957,0.0 -95.457617,29.759366,0.0 -95.458024,29.761577,0.0 -95.460164,29.762108,0.0 -95.458017,29.763669,0.0 -95.45838,29.764847,0.0 -95.461615,29.765945,0.0 -95.462284,29.767409,0.0 -95.463264,29.767765,0.0 -95.464975,29.76697,0.0 -95.465181,29.768661,0.0 -95.46624,29.768633,0.0 -95.468541,29.770634,0.0 -95.471956,29.770331,0.0 -95.473242,29.772178,0.0 -95.475032,29.772425,0.0 -95.476449,29.771149,0.0 -95.477635,29.772682,0.0 -95.479711,29.773378,0.0 -95.478329,29.771461,0.0 -95.478172,29.765082,0.0 -95.477408,29.761472,0.0 -95.477285,29.752384,0.0 -95.476976,29.750969,0.0 -95.47728,29.74592,0.0 -95.477166,29.740032,0.0 -95.476602,29.738365,0.0 -95.476435,29.731508,0.0 -95.476411,29.730216,0.0 -95.480128,29.730187,0.0`.split(' ').map(coord => {
+    const [lon, lat, _] = coord.split(',').map(Number);
+    return { lon, lat };
+  });
+
+  let northMost = coordinates[0];
+  let southMost = coordinates[0];
+  let westMost = coordinates[0];
+  let eastMost = coordinates[0];
+
+  coordinates.forEach(coord => {
+    if (coord.lat > northMost.lat) northMost = coord;
+    if (coord.lat < southMost.lat) southMost = coord;
+    if (coord.lon < westMost.lon) westMost = coord;
+    if (coord.lon > eastMost.lon) eastMost = coord;
+  });
+
+  console.log('North-most:', northMost);
+  console.log('South-most:', southMost);
+  console.log('West-most:', westMost);
+  console.log('East-most:', eastMost);
+
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>testing Fc</title>
+</head>
+<body>
+
+<!--
+
+1. **Define Four Corner Coordinates**:
+    - The script defines four constant objects (`northMost`, `southMost`, `westMost`, and `eastMost`), each containing the latitude (`lat`) and longitude (`lon`) coordinates that represent the four corners of a geographical boundary.
+
+2. **Boundary Check Function (`isWithinBoundary`)**:
+    - The script has a function named `isWithinBoundary` that checks if a given property is located within the defined boundary.
+    - The function takes a `property` argument (expected to contain latitude and longitude) and checks whether its coordinates are within the boundary set by the four corner coordinates.
+    - It returns `true` if the property is within the boundary and `false` otherwise.
+
+3. **Data Retrieval Function (`fetchZillowData`)**:
+    - This asynchronous function fetches property details from the Zillow API using the Zillow Property ID (`zpid`).
+    - The function constructs the API URL using the provided `zpid`.
+    - It sets the HTTP request method as 'GET' and includes headers necessary for authentication with the Zillow API (like the `X-RapidAPI-Key` and `X-RapidAPI-Host`).
+    - The function makes an asynchronous request to the Zillow API to retrieve the property data.
+    - Upon successfully retrieving the data, the function checks if the property is within the predefined boundary using the `isWithinBoundary` function.
+    - If the property is within the boundary, it logs the property details to the console with a relevant message. Otherwise, it logs a message indicating that the property is outside the boundary.
+    - If there's an error in fetching data, the script logs the error message.
+
+4. **Actual Execution**:
+    - The script has commented out lines which seem to test properties from different ZIP codes, but these are not executed because they are commented out.
+    - The only active line of execution in the script fetches the data for a property with a Zillow Property ID of `28129344` and logs a message indicating it's "slightly outside the four square polygon, but in 77056 zipcode".
+    - After fetching the data, the script checks if this property is within the predefined boundary and logs the result accordingly.
+
+Overall, the script is designed to fetch property details from Zillow using their API and then determine whether the fetched property is within a predefined boundary. It showcases this functionality using a single property as an example.
+
+-->
+
+
+<script type="module">
+  // Define the four corner coordinates
+  const northMost = { lat: 29.773378, lon: -95.479711 };
+  const southMost = { lat: 29.723552, lon: -95.472321 };
+  const westMost = { lat: 29.728819, lon: -95.480313 };
+  const eastMost = { lat: 29.751801, lon: -95.455715 };
+
+  // Check if the given property is within the boundary
+  function isWithinBoundary(property) {
+    const lat = property.latitude;  // Adjust based on the Zillow API response structure
+    const lon = property.longitude;
+
+    return lat <= northMost.lat &&
+            lat >= southMost.lat &&
+            lon >= westMost.lon &&
+            lon <= eastMost.lon;
+  }
+
+  async function fetchZillowData(zpid) {
+    const url = `https://zillow-com1.p.rapidapi.com/property?zpid=${zpid}`;
+    const options = {
+      method: 'GET',
+      headers: {
+        'X-RapidAPI-Key': '',  // Replace with your key
+        'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+      }
+    };
+
+    try {
+      const response = await fetch(url, options);
+      const result = await response.json();
+
+      // Check if property is within boundary
+      if (isWithinBoundary(result)) {
+        console.log("Property is within the boundary:", result);
+      } else {
+        console.log("Property is outside the boundary.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  // console.log("in 77056 ");
+  // fetchZillowData(27933799);
+
+  // console.log("in 77080 ");
+  // fetchZillowData(27886237);
+
+  console.log("slightly outside the four square polygon, but in 77056 zipcode  ");
+  fetchZillowData(28129344);
+
+</script>
+
+<!--
+
+27933799 zpid in 77056
+
+27886237 zpid in 77080
+
+28129344 zpid slightly outside the four square polygon, but in 77056 zipcode
+
+-->
+
+
+
+</body>
+</html>

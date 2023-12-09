@@ -1,2 +1,285 @@
-add zillow api to project
-fix the issue when running the app
+
+to change precinct line color, change
+
+<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style> red
+<Style><LineStyle><color>ff00ff00</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style> green
+
+to do:
+
+
+
+all district
+https://www.hccs.edu/media/houston-community-college/district/pdf/01262022_Redistricting_Current-Voting-Districts.pdf
+
+
+district 1
+https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-I-with-Zip-Codes.jpg
+
+https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_1.geojson
+
+77091
+77096
+77093
+77022
+77018
+77092
+77055
+77008
+77009
+77007
+77024
+77057
+77056
+77027
+77081
+
+
+district 2
+https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-II-with-Zip-Codes.jpg
+Multiple Zip Codes with GeoJSON
+
+https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_2.geojson
+
+77088
+77037
+77016
+77050
+77091
+77076
+77093
+77078
+77028
+77026
+77022
+77018
+77092
+77009
+77026
+77020
+77013
+77029
+
+
+
+
+
+district 3
+https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-III-with-Zip-Codes.jpg
+https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_3.geojson
+
+77204 does not exist
+
+77006
+77003
+77011
+77004
+77023
+77012
+77087
+77017
+77061
+77033
+77075
+77048
+77047
+77045
+77053
+
+district 4
+https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-IV-with-Zip-Codes.jpg
+
+https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_4.geojson
+
+
+
+77072
+77036
+77099
+77074
+77096
+77035
+77025
+77030
+77054
+77004
+77021
+77033
+77051
+77048
+
+district 5
+https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-V-with-Zip-Codes.jpg
+
+https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_5.geojson
+
+77042
+77072
+77063
+77036
+77074
+77081
+77401
+77096
+77025
+77030
+77005
+77098
+77027
+77019
+77007
+77006
+
+
+district 6
+https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-VI-with-Zip-Codes.jpg
+
+https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_6.geojson
+
+77450
+77094
+77083
+77082
+77077
+77079
+77042
+77072
+77063
+77024
+77057
+77056
+77027
+
+district7
+https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-VII-with-Zip-Codes.jpg
+
+https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_7.geojson
+
+77082
+77083
+77072
+77099
+77031
+77477
+77478
+77479
+77489
+77545
+77459
+
+
+district 8
+https://www.hccs.edu/media/houston-community-college/district/images/Single-Member-District-VIII-with-Zip-Codes.jpg
+
+https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_8.geojson
+
+77008
+77007
+77019
+77098
+77027
+77046
+77098
+77006
+77010
+77002
+77009
+77022
+77026
+77020
+77003
+77011
+77023
+77012
+77029
+77013
+77015
+77049
+
+district 9
+https://www.hccs.edu/media/houston-community-college/district/pdf/Single-Member-District-IX-with-Zip-Codes.pdf
+
+https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_9.geojson
+
+77099
+77036
+77074
+77096
+77025
+77054
+77051
+77031
+77071
+77035
+77045
+77048
+77047
+77053
+77489
+77477
+
+
+
+To adjust GeoJSON boundaries to accurately represent school district areas that may not align with the given zip code boundaries, you have a few options:
+
+1. **Edit GeoJSON Files:** You could manually edit the GeoJSON files using a GIS software like QGIS or an online editor like geojson.io to precisely match the school district boundaries. This might require getting the accurate boundary data from local government or educational department sources.
+
+2. **Merge Zip Codes:** If the school district overlaps multiple zip codes, you could merge several zip codes into a single GeoJSON feature that represents the entire district area.
+
+3. **Custom Creation:** Where boundaries need to be created from scratch, you can draft the boundary lines manually using a tool that allows for drawing polygons over a map, then export this as a GeoJSON.
+
+4. **Data Source Consultation:** Check if the school districts themselves provide open data for their exact boundaries, which might be available in GeoJSON format or another format that can be converted to GeoJSON.
+
+Here's how you would go about manipulating the GeoJSON for different scenarios:
+
+- **Scenario 1 - Edit Existing GeoJSON:**
+  - Load the current GeoJSON into a GIS tool.
+  - Adjust the boundaries manually to fit the school districts.
+  - Save and use the modified GeoJSON in your project.
+
+- **Scenario 2 - Merge Zip Codes:**
+  - Use GIS software to overlay zip code boundaries with school district boundaries.
+  - Create new district boundary GeoJSON by merging zip code areas.
+
+- **Scenario 3 - Custom Creation:**
+  - Draw the boundaries using mapping software.
+  - Export these new boundaries as GeoJSON files.
+
+After you've refined the boundaries, you'll want to integrate these into your application and ensure that the listings are correctly represented within the updated boundaries.
+
+### User Story for School District-Based Real Estate Listings
+
+Here's a user story to describe how a user would interact with your application:
+
+- **Title:** View Real Estate Listings by School District
+
+- **As a** parent looking for a new home,
+- **I want** to view all current real estate listings within the boundaries of a specific school district,
+- **So that** I can ensure my new home provides access to desired educational opportunities for my children.
+
+#### Acceptance Criteria:
+
+1. **Viewing Listings:**
+   - Given I am on the main map page,
+   - When I select a school district from a dropdown menu or by navigating the map,
+   - Then I should see a highlighted overlay showing the exact boundaries of the selected school district.
+
+2. **Listing Details:**
+   - Given I am viewing a school district's boundary,
+   - When I click on an available property listing within those boundaries,
+   - Then I should see details about the property, such as price, size, and photos.
+
+3. **Searching Listings:**
+   - Given I have specific requirements for a property,
+   - When I input my requirements (like the number of bedrooms, price range, etc.),
+   - Then I should see filtered results that only show listings meeting my criteria within the school district's boundaries.
+
+4. **Incorrect Boundaries:**
+   - Given I am a user who knows the local area,
+   - When I notice that a boundary is incorrect or a listing falls outside the actual school district,
+   - Then I should be able to report this inaccuracy for review.
+
+5. **Contact Information:**
+   - Given I am interested in a listing,
+   - When I decide I want more information,
+   - Then I should be able to contact the real estate agent directly from the listing details page.
+   activity flash
