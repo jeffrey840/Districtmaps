@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GeoJSON, Turf.js, and Google Maps Example</title>
+    <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADd7NKHfGXY1FLZn4z260m0pwnhFcA1gE&libraries=places"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: space-between;
+        }
+        #searchContainer {
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+        #map {
+            height: 500px;
+            width: 70%;
+        }
+        #searchBox {
+            width: 100%;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: white;
+            background-position: 10px 10px;
+            background-repeat: no-repeat;
+            padding: 12px 20px 12px 40px;
+            margin-bottom: 20px; /* Space for future elements */
+        }
+    </style>
+</head>
+<body>
+    <div id="searchContainer">
+        <input id="searchBox" type="text" placeholder="Enter an address...">
+        <!-- Space for future elements like buttons, toggles, etc. -->
+    </div>
+    <div id="map"></div>
+    <script>
+        let map, marker, geoJsonData;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 12,
+                center: { lat: 29.7604, lng: -95.3698 } // Default center (e.g., Houston, TX)
+            });
+        }
+
+        async function fetchAndProcessGeoJson(url) {
+            try {
+                const response = await fetch(url);
+                geoJsonData = await response.json();
+                if (geoJsonData && geoJsonData.features) {
+                    map.data.addGeoJson(geoJsonData);
+                    document.getElementById('searchBox').disabled = false; // Enable search box after loading GeoJSON
+                } else {
+                    console.error("GeoJSON data is invalid.");
+                }
+            } catch (error) {
+                console.error("Error fetching GeoJSON data:", error);
+            }
+        }
+
+        async function checkPointInGeoJsonPolygon(geoJsonData, pointCoordinates) {
+            if (geoJsonData && geoJsonData.features) {
+                const polygon = geoJsonData.features[0].geometry;
+                const point = turf.point(pointCoordinates);
+                const isInside = turf.booleanPointInPolygon(point, polygon);
+
+                if (!marker) {
+                    // Initialize the marker when first needed
+                    marker = new google.maps.Marker({
+                        position: { lat: pointCoordinates[1], lng: pointCoordinates[0] },
+                        map: map,
+                        title: 'Point Location'
+                    });
+                } else {
+                    // Update the marker's position
+                    marker.setPosition({ lat: pointCoordinates[1], lng: pointCoordinates[0] });
+                }
+
+                alert(isInside ? "is within bounds" : "outside bounds");
+            } else {
+                alert('Failed to load or process GeoJSON data.');
+            }
+        }
+
+
+        async function handleSearchInput(e) {
+            if (e.key === 'Enter') {
+                const address = document.getElementById('searchBox').value;
+                const geocoder = new google.maps.Geocoder();
+
+                try {
+                    const location = await geocodeAddress(geocoder, address);
+                    const pointCoordinates = [location.lng(), location.lat()];
+
+                    // Ensure GeoJSON data is loaded before proceeding
+                    if (geoJsonData) {
+                        checkPointInGeoJsonPolygon(geoJsonData, pointCoordinates);
+                    } else {
+                        alert("GeoJSON data is not yet loaded. Please try again.");
+                    }
+                } catch (error) {
+                    alert(error);
+                }
+            }
+        }
+
+        async function geocodeAddress(geocoder, address) {
+            return new Promise((resolve, reject) => {
+                geocoder.geocode({ 'address': address }, (results, status) => {
+                    if (status === 'OK') {
+                        resolve(results[0].geometry.location);
+                    } else {
+                        reject('Geocode was not successful for the following reason: ' + status);
+                    }
+                });
+            });
+        }
+
+
+        document.getElementById('searchBox').addEventListener('keydown', handleSearchInput);
+        initMap(); // Initialize map
+        fetchAndProcessGeoJson('https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/merged_districts.geojson');
+
+        // 1776 Gessner Rd, Houston, TX 77080 outside bounds
+        // 4701 Dickson St, Houston, TX 77007 within bounds
+
+    </script>
+</body>
+</html>
