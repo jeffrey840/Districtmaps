@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<title>GeoJSON, Turf.js, and Google Maps Example</title>
 	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsuN-9jE_5TiIMb_-PfH8V8j7FkXg0PVQ"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key="></script>
 	<style>
         #map {
             height: 500px;
@@ -62,9 +62,10 @@
 		}
 	}
 
-	const geoJsonUrl = 'https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/finished_zip_prec_dis_2_outline.geojson';
-	const pointCoordinates = [-95.323, 29.842912];
-	// this si inside teh overlay
+	const geoJsonUrl = 'https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/merged_districts.geojson';
+	// const pointCoordinates = [-95.323, 29.842912]; // this is inside the overlay
+	const pointCoordinates = [-96.323, 29.842912]; // this is Outside the overlay
+
 
 	checkPointInGeoJsonPolygon(geoJsonUrl, pointCoordinates);
 </script>

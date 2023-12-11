@@ -221,33 +221,6 @@ https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojso
 
 To adjust GeoJSON boundaries to accurately represent school district areas that may not align with the given zip code boundaries, you have a few options:
 
-1. **Edit GeoJSON Files:** You could manually edit the GeoJSON files using a GIS software like QGIS or an online editor like geojson.io to precisely match the school district boundaries. This might require getting the accurate boundary data from local government or educational department sources.
-
-2. **Merge Zip Codes:** If the school district overlaps multiple zip codes, you could merge several zip codes into a single GeoJSON feature that represents the entire district area.
-
-3. **Custom Creation:** Where boundaries need to be created from scratch, you can draft the boundary lines manually using a tool that allows for drawing polygons over a map, then export this as a GeoJSON.
-
-4. **Data Source Consultation:** Check if the school districts themselves provide open data for their exact boundaries, which might be available in GeoJSON format or another format that can be converted to GeoJSON.
-
-Here's how you would go about manipulating the GeoJSON for different scenarios:
-
-- **Scenario 1 - Edit Existing GeoJSON:**
-  - Load the current GeoJSON into a GIS tool.
-  - Adjust the boundaries manually to fit the school districts.
-  - Save and use the modified GeoJSON in your project.
-
-- **Scenario 2 - Merge Zip Codes:**
-  - Use GIS software to overlay zip code boundaries with school district boundaries.
-  - Create new district boundary GeoJSON by merging zip code areas.
-
-- **Scenario 3 - Custom Creation:**
-  - Draw the boundaries using mapping software.
-  - Export these new boundaries as GeoJSON files.
-
-After you've refined the boundaries, you'll want to integrate these into your application and ensure that the listings are correctly represented within the updated boundaries.
-
-### User Story for School District-Based Real Estate Listings
-
 Here's a user story to describe how a user would interact with your application:
 
 - **Title:** View Real Estate Listings by School District
