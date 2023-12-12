@@ -217,8 +217,6 @@ https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojso
 77489
 77477
 
-
-
 To adjust GeoJSON boundaries to accurately represent school district areas that may not align with the given zip code boundaries, you have a few options:
 
 Here's a user story to describe how a user would interact with your application:
