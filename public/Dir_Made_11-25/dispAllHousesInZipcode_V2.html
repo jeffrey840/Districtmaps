@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Property Listings</title>
+	<!-- Import Google Maps JS API -->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADd7NKHfGXY1FLZn4z260m0pwnhFcA1gE&callback=initialize" async defer></script>
+	<style>
+        /* Add CSS styles for new UI components */
+        .filter-container {
+            margin-bottom: 20px;
+        }
+
+        .filter-container select, .filter-container input {
+            margin-right: 10px;
+        }
+
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+
+        .toggle-buttons {
+            margin-bottom: 10px;
+        }
+	</style>
+</head>
+<body>
+
+<!-- Filters for searching properties -->
+<div class="filter-container">
+	<select id="propertyType">
+		<option value="">All Types</option>
+		<option value="Houses">Houses</option>
+		<option value="Condos">Condos</option>
+		<!-- Add other property types here -->
+	</select>
+	<input type="number" id="minPrice" placeholder="Min Price">
+	<input type="number" id="maxPrice" placeholder="Max Price">
+	<!-- Add other filters as needed -->
+
+	<select id="statusType">
+		<option value="">Status Type</option>
+		<option value="ForSale">For Sale</option>
+		<option value="ForRent">For Rent</option>
+		<option value="RecentlySold">Recently Sold</option>
+		<!-- Add more status types if needed -->
+	</select>
+	<input type="number" id="bedsMin" placeholder="Min Beds">
+	<input type="number" id="bedsMax" placeholder="Max Beds">
+	<!-- Add more filters as needed -->
+
+
+	<button onclick="applyFilters()">Search</button>
+</div>
+
+<!-- Toggle buttons for map markers -->
+<div class="toggle-buttons">
+	<button onclick="toggleMarkers(true)">Show Markers</button>
+	<button onclick="toggleMarkers(false)">Hide Markers</button>
+</div>
+
+<!-- UI buttons to allow user to fetch houses by zipcode -->
+<div id="zipcodeButtons">
+	<button onclick="fetchHouses('77080', 1)">77080</button>
+	<button onclick="fetchHouses('77056', 1)">77056</button>
+</div>
+
+<!-- Map component where houses will be plotted -->
+<div id="map"></div>
+
+<!-- Pagination component for handling multiple pages of house data -->
+<div id="pagination"></div>
+
+<script>
+	let map;
+	let markers = []; // Array to store map markers
+
+	function initialize() {
+		// Initialize map with default location and settings
+		map = new google.maps.Map(document.getElementById('map'), {
+			center: { lat: 29.8131, lng: -95.4648 },
+			zoom: 12
+		});
+	}
+
+	// Existing initialization code...
+
+	async function fetchHouses(zipCode, page = 1) {
+		// Construct the API request URL with filters
+		let url = new URL(`https://zillow-com1.p.rapidapi.com/propertyExtendedSearch`);
+		let params = {
+			location: zipCode,
+			page: page,
+			// home_type: document.getElementById('propertyType').value,
+			// minPrice: document.getElementById('minPrice').value,
+			// maxPrice: document.getElementById('maxPrice').value,
+			status_type: document.getElementById('statusType').value,
+			bedsMin: document.getElementById('bedsMin').value,
+			bedsMax: document.getElementById('bedsMax').value,
+			home_type: document.getElementById('propertyType').value,
+			minPrice: document.getElementById('minPrice').value,
+			maxPrice: document.getElementById('maxPrice').value
+			// Add more parameters as needed
+		};
+		url.search = new URLSearchParams(params).toString();
+
+		// Define the request options, including headers
+		const options = {
+			method: 'GET',
+			headers: {
+				'X-RapidAPI-Key': '206a0782demsh5a1d5a242226a6dp1f6b6cjsnf08b18ac4dfa', // replace with your key
+				'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+			}
+		};
+
+		// Fetch data from Zillow API
+		try {
+			const response = await fetch(url, options);
+			const data = await response.json();
+			// Existing handling of response...
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	function applyFilters() {
+		// Use currentZipCode or another method to determine which zipcode to query
+		fetchHouses(currentZipCode, 1);
+	}
+
+	function toggleMarkers(show) {
+		markers.forEach(marker => marker.setMap(show ? map : null));
+	}
+
+	// Modify initMap to store markers in the markers array
+	function initMap(houses = [], center = defaultLatLng) {
+		// Clear existing markers
+		markers.forEach(marker => marker.setMap(null));
+		markers = [];
+
+		// Rest of the map initialization...
+		houses.forEach(house => {
+			let marker = new google.maps.Marker({
+				position: { lat: house.latitude, lng: house.longitude },
+				map: map,
+				icon: redMarker
+			});
+			markers.push(marker); // Store the marker
+		});
+	}
+
+
+	// Existing functions (initMap, handlePagination, etc.)
+
+</script>
+</body>
+</html>
