@@ -96,8 +96,15 @@
 				'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
 			}
 		};
+		const minPrice = document.getElementById('minPrice').value;
+		const maxPrice = document.getElementById('maxPrice').value;
 
-		const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}&home_type=Houses`;
+		let url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}&home_type=Houses`;
+		if (minPrice) url += `&minPrice=${minPrice}`;
+		if (maxPrice) url += `&maxPrice=${maxPrice}`;
+		// Log the URL and options
+		console.log("Request URL:", url);
+		console.log("Request Options:", options);
 		try {
 			const response = await fetch(url, options);
 			const data = await response.json();
@@ -146,15 +153,15 @@
 		houses.forEach(house => {
 			let marker = new google.maps.Marker({
 				position: { lat: house.latitude, lng: house.longitude },
-				map: map
+				map: map,
+				title: house.address // Example: showing address on hover
 			});
 			markers.push(marker);
 		});
 	}
 
 
-	// Existing functions (handlePagination, etc.)
-	// Existing functions (initMap, handlePagination, etc.)
+
 
 </script>
 </body>

@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Property Listing Form</title>
+</head>
+<body>
+<form id="propertyForm">
+	<label for="location">Location:</label>
+	<input type="text" id="location" name="location" placeholder="77080" maxlength="100"><br>
+
+	<label for="page">Page:</label>
+	<input type="number" id="page" name="page" max="20"><br>
+
+	<label for="status_type">Status Type:</label>
+	<select id="status_type" name="status_type">
+		<option value="">Any</option>
+		<option value="ForRent">For Rent</option>
+		<option value="ForSale">For Sale</option>
+		<option value="RecentlySold">Recently Sold</option>
+	</select><br>
+
+	<label for="home_type">Home Type:</label>
+	<input type="text" id="home_type" name="home_type" placeholder="Townhomes, Houses, etc."><br>
+
+	<label for="sort">Sort:</label>
+	<select id="sort" name="sort">
+		<option value="Homes_for_You">Homes for You</option>
+		<option value="Price_High_Low">Price High to Low</option>
+		<option value="Price_Low_High">Price Low to High</option>
+		<!-- Add other sort options here -->
+	</select><br>
+
+	<!-- Add other input fields here -->
+
+	<label for="polygon">Polygon:</label>
+	<input type="text" id="polygon" name="polygon" placeholder="lon lat,lon1 lat1,lon2 lat2"><br>
+
+	<label for="minPrice">Min Price:</label>
+	<input type="number" id="minPrice" name="minPrice"><br>
+
+	<label for="maxPrice">Max Price:</label>
+	<input type="number" id="maxPrice" name="maxPrice"><br>
+
+	<!-- Add other input fields here -->
+
+	<label for="isComingSoon">Coming Soon:</label>
+	<select id="isComingSoon" name="isComingSoon">
+		<option value="">Any</option>
+		<option value="1">Yes</option>
+		<option value="0">No</option>
+	</select><br>
+
+	<!-- Add other input fields here -->
+
+	<input type="submit" value="Submit">
+	<input type="reset" value="Reset">
+</form>
+
+<p>API Endpoint URL: <span id="apiEndpoint">[API Endpoint Here]</span></p>
+</body>
+</html>
+```
+
+This code includes form elements for parameters like location, page, status_type, home_type, sort, polygon, minPrice, maxPrice, and isComingSoon, along with buttons for submit and reset actions. Additional input fields can be added following the same pattern.
+
+---
+
+**History**: Completed the HTML code with form elements for various property listing parameters.
+
+**Source Tree**:
+- (💾=saved: [HTML Form](sandbox:/property-listing-form.html)) `property-listing-form.html`
+- ✅ HTML structure
+- ✅ Form elements for parameters
+- ✅ Dropdowns for ENUM/BOOLEAN types
+- ✅ Input fields for STRING/NUMBER types
+- ✅ Buttons for actions
+- ✅ API endpoint URL placeholder
+
+**Next Task**: FINISHED - Suggest enhancements or performance improvements for the HTML page.
+
