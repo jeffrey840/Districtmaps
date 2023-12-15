@@ -28,29 +28,35 @@
 <body>
 
 <!-- Filters for searching properties -->
+<!-- Filters for searching properties -->
 <div class="filter-container">
-	<select id="propertyType">
-		<option value="">All Types</option>
-		<option value="Houses">Houses</option>
-		<option value="Condos">Condos</option>
-		<!-- Add other property types here -->
-	</select>
-	<input type="number" id="minPrice" placeholder="Min Price">
-	<input type="number" id="maxPrice" placeholder="Max Price">
-	<!-- Add other filters as needed -->
-
+	<input type="text" id="location" placeholder="Location (Zip Code)">
+	<input type="number" id="page" placeholder="Page" max="20">
 	<select id="statusType">
 		<option value="">Status Type</option>
 		<option value="ForSale">For Sale</option>
 		<option value="ForRent">For Rent</option>
 		<option value="RecentlySold">Recently Sold</option>
-		<!-- Add more status types if needed -->
 	</select>
+	<input type="text" id="homeType" placeholder="Home Type">
+	<input type="text" id="sort" placeholder="Sort Criteria">
+
+	<select id="propertyType">
+		<option value="">All Types</option>
+		<option value="Houses">Houses</option>
+		<option value="Condos">Condos</option>
+		<option value="Townhomes">Townhomes</option>
+		<option value="Apartments_Condos_Co-ops">Apartments/Condos/Co-ops</option>
+		<option value="Multi-family">Multi-family</option>
+		<option value="Apartments">Apartments</option>
+		<option value="Manufactured">Manufactured</option>
+		<option value="LotsLand">Lots/Land</option>
+	</select>
+
+	<input type="number" id="minPrice" placeholder="Min Price">
+	<input type="number" id="maxPrice" placeholder="Max Price">
 	<input type="number" id="bedsMin" placeholder="Min Beds">
 	<input type="number" id="bedsMax" placeholder="Max Beds">
-	<!-- Add more filters as needed -->
-
-
 	<button onclick="applyFilters()">Search</button>
 </div>
 
@@ -96,12 +102,28 @@
 				'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
 			}
 		};
+		const location = document.getElementById('location').value || '77080';
+		const page = document.getElementById('page').value || 1;
+		const statusType = document.getElementById('statusType').value;
+		const homeType = document.getElementById('homeType').value;
+		const sort = document.getElementById('sort').value;
 		const minPrice = document.getElementById('minPrice').value;
 		const maxPrice = document.getElementById('maxPrice').value;
+		const propertyType = document.getElementById('propertyType').value;
+		const bedsMin = document.getElementById('bedsMin').value;
+		const bedsMax = document.getElementById('bedsMax').value;
 
-		let url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}&home_type=Houses`;
+		// Construct URL with filters
+		let url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${location}&page=${page}`;
+		if (statusType) url += `&status_type=${statusType}`;
+		if (homeType) url += `&home_type=${homeType}`;
+		if (sort) url += `&sort=${sort}`;
 		if (minPrice) url += `&minPrice=${minPrice}`;
 		if (maxPrice) url += `&maxPrice=${maxPrice}`;
+		if (propertyType) url += `&home_type=${propertyType}`;
+		if (bedsMin) url += `&beds_min=${bedsMin}`;
+		if (bedsMax) url += `&beds_max=${bedsMax}`;
+
 		// Log the URL and options
 		console.log("Request URL:", url);
 		console.log("Request Options:", options);
@@ -124,7 +146,7 @@
 
 	// Applies user-selected filters and fetches houses
 	function applyFilters() {
-		fetchHouses(currentZipCode, 1);
+		fetchHouses();
 	}
 
 	// Toggles the visibility of markers on the map

@@ -141,7 +141,7 @@
 			}
 		};
 
-		const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}&home_type=Houses`;
+		const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}`;
 		const response = await fetch(url, options);
 		const data = await response.json();
 
