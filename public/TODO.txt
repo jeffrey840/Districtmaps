@@ -219,35 +219,23 @@ https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojso
 
 copy eth zilow filter nav bar and make sure it wprks with your filters
 
-    drop down:
-        name : price range
-        list price button
-        minimum [enter number]
-
-        drop down
-        maximum
-        dropdown selections are 50,000, 100,000, 150,000 [incrementing by 50,000, until reaching 1,000,000]
-
-    drop down:(button named:beds & baths)
-    (inside teh dropdown it has 2 selection)
-    selction 1
-    titled:
-    bedrooms:
-    (buttons are below the bedrooms title)
-    option buttons are any , 1, 2 , 3, 4, 5,
-    selction 2
-        titled:
-    bathrooms:
-        (buttons are below the bedrooms title)
-        option buttons are any , 1, 2 , 3, 4, 5,
-    apply button below bathromms
 
     drop down titled, home type
+    if teh house checkbox is pressed the dropdown  title will chnage, it will appear like this,
+
+    "home type(1)", if "townhomes," is also selected the hometype will increase like thsi , home type(2), the (1, and 2 numbers repreent teh avalable lisings), for now just focus on adding thsi fuctionality and displaying it
+
+    radio button titled: deselect all(if pressed deselects the checkmarks for this dropdown)
+
     (checkboxes for all)
-    house, townhomes, ulty-family-condos/co-ops
+    house,
+    townhomes,
+    Multy-family-condos/co-ops
     lots/land
     apartments,
     manufactured
+
+    apply button
 
     dropdown tltled, more
 

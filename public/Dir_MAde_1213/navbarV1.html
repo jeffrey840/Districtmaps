@@ -49,7 +49,7 @@
   <ul>
     <!-- Price Range Dropdown -->
     <li class="dropdown">
-      <a href="#">Price Range</a>
+      <a href="#" id="price-range-title">Price Range</a>
       <div class="dropdown-content">
         <form id="price-range-form">
           <label for="min-price">Minimum</label>
@@ -58,8 +58,39 @@
           <select id="max-price">
             <!-- Options added via JavaScript -->
           </select>
-          <button type="button" onclick="listPrice()">apply</button>
+          <button type="button" onclick="applyPriceRange()">Apply</button>
         </form>
+      </div>
+    </li>
+  </ul>
+
+  <ul>
+    <!-- Beds & Baths Dropdown -->
+    <li class="dropdown">
+      <a href="#" id="beds-baths-title">Beds & Baths</a>
+      <div class="dropdown-content">
+        <div id="bedroom-options">
+          <span>Bedrooms:</span>
+          <!-- Bedroom option buttons -->
+          <button class="option-button" onclick="selectOption('bedrooms', 'any')">Any</button>
+          <button class="option-button" onclick="selectOption('bedrooms', 1)">1</button>
+          <button class="option-button" onclick="selectOption('bedrooms', 2)">2</button>
+          <button class="option-button" onclick="selectOption('bedrooms', 3)">3</button>
+          <button class="option-button" onclick="selectOption('bedrooms', 4)">4</button>
+          <button class="option-button" onclick="selectOption('bedrooms', 5)">5</button>
+
+        </div>
+        <div id="bathroom-options">
+          <span>Bathrooms:</span>
+          <!-- Bathroom option buttons -->
+          <button class="option-button" onclick="selectOption('bathrooms', 'any')">Any</button>
+          <button class="option-button" onclick="selectOption('bathrooms', 1)">1</button>
+          <button class="option-button" onclick="selectOption('bathrooms', 2)">2</button>
+          <button class="option-button" onclick="selectOption('bathrooms', 3)">3</button>
+          <button class="option-button" onclick="selectOption('bathrooms', 4)">4</button>
+          <button class="option-button" onclick="selectOption('bathrooms', 5)">5</button>
+        </div>
+        <button type="button" onclick="applyBedsBaths()">Apply</button>
       </div>
     </li>
   </ul>
@@ -69,6 +100,15 @@
 <script>
   function updateTitle(newTitle) {
     document.getElementById('dropdown-title').textContent = newTitle;
+  }
+
+
+  // Function to handle the listing of prices
+  function listPrice() {
+    const minPrice = document.getElementById('min-price').value;
+    const maxPrice = document.getElementById('max-price').value;
+    // Implement logic to handle the listing based on selected prices
+    console.log(`Listing properties from $${minPrice} to $${maxPrice}`);
   }
 
   function populateMaxPrice() {
@@ -81,12 +121,27 @@
     }
   }
 
-  // Function to handle the listing of prices
-  function listPrice() {
+  function applyPriceRange() {
     const minPrice = document.getElementById('min-price').value;
     const maxPrice = document.getElementById('max-price').value;
-    // Implement logic to handle the listing based on selected prices
-    console.log(`Listing properties from $${minPrice} to $${maxPrice}`);
+    const priceRangeTitle = document.getElementById('price-range-title');
+    priceRangeTitle.textContent = `$${minPrice} - $${parseInt(maxPrice).toLocaleString()}`;
+  }
+
+  let selectedOptions = {
+    bedrooms: 'any',
+    bathrooms: 'any'
+  };
+
+  // Function to handle option selection
+  function selectOption(category, value) {
+    selectedOptions[category] = value;
+  }
+
+  // Function to apply the selected options and update the title
+  function applyBedsBaths() {
+    const title = `${selectedOptions.bedrooms} bd, ${selectedOptions.bathrooms} ba`;
+    document.getElementById('beds-baths-title').textContent = title;
   }
 
   // Populate the maximum price dropdown on page load
@@ -94,16 +149,6 @@
 
 </script>
 
-<!--thsi dropdown does not effetc teh previous dropdown-->
-<!--next drop titled price when cliicked-->
-<!--drop down:-->
-<!--name : price range-->
-<!--list price button-->
-<!--minimum [enter number]-->
-
-<!--drop down-->
-<!--maximum-->
-<!--dropdown selections are 50,000, 100,000, 150,000 [incrementing by 50,000, until reaching 1,000,000]-->
 
 </body>
 </html>
