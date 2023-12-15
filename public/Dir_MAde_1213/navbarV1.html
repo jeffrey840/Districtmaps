@@ -39,9 +39,9 @@
     <li class="dropdown">
       <a href="#" id="dropdown-title">For Sale</a>
       <div class="dropdown-content">
-        <a href="#" onclick="updateTitle('For Sale')">For Sale</a>
-        <a href="#" onclick="updateTitle('For Rent')">For Rent</a>
-        <a href="#" onclick="updateTitle('Sold')">Sold</a>
+        <a href="#" onclick="updateSaleTitle('For Sale')">For Sale</a>
+        <a href="#" onclick="updateSaleTitle('For Rent')">For Rent</a>
+        <a href="#" onclick="updateSaleTitle('Sold')">Sold</a>
       </div>
     </li>
   </ul>
@@ -95,22 +95,96 @@
     </li>
   </ul>
 
+  <ul>
+    <!-- Home Type Dropdown -->
+    <li class="dropdown">
+      <a href="#" id="home-type-title">Home Type</a>
+<!--      <a href="#" id="home-type-title">Home Type</a>-->
+      <div class="dropdown-content">
+        <form id="home-type-form">
+          <label>
+            <input type="radio" name="select-all" onclick="toggleSelectAll(true)"> Select All
+          </label>
+          <label>
+            <input type="radio" name="select-all" onclick="toggleSelectAll(false)"> Deselect All
+          </label>
+          <div>
+            <label><input type="checkbox" name="home-type" value="House" onclick="updateHomeType()"> House</label>
+
+            <label><input type="checkbox" name="home-type" value="town-home" onclick="updateHomeType()"> town home</label>
+
+            <!-- Additional checkboxes for other home types -->
+          </div>
+          <button type="button" onclick="applyHomeType()">Apply</button>
+        </form>
+      </div>
+    </li>
+  </ul>
+
 </nav>
 
 <script>
-  function updateTitle(newTitle) {
+  let selectedHomeTypes = new Set();
+  let selectedOptions = {
+    bedrooms: 'any',
+    bathrooms: 'any'
+  };
+
+  // Function for updating the "For Sale" dropdown title
+  function updateSaleTitle(newTitle) {
     document.getElementById('dropdown-title').textContent = newTitle;
   }
 
-
-  // Function to handle the listing of prices
-  function listPrice() {
+  // Function for updating the "Price Range" dropdown title
+  function updatePriceTitle() {
     const minPrice = document.getElementById('min-price').value;
     const maxPrice = document.getElementById('max-price').value;
-    // Implement logic to handle the listing based on selected prices
-    console.log(`Listing properties from $${minPrice} to $${maxPrice}`);
+    document.getElementById('price-range-title').textContent = `$${minPrice} - $${parseInt(maxPrice).toLocaleString()}`;
   }
 
+  // Function for updating the "Beds & Baths" dropdown title
+  function updateBedsBathsTitle() {
+    const title = `${selectedOptions.bedrooms} bd, ${selectedOptions.bathrooms} ba`;
+    document.getElementById('beds-baths-title').textContent = title;
+  }
+
+  // Function for updating the "Home Type" dropdown title
+  function updateHomeTypeTitle() {
+    const title = `Home Type(${selectedHomeTypes.size})`;
+    document.getElementById('home-type-title').textContent = title;
+  }
+
+  // Function for handling option selection in "Beds & Baths"
+  function selectOption(category, value) {
+    selectedOptions[category] = value;
+  }
+
+  // Function for applying selections in "Beds & Baths"
+  function applyBedsBaths() {
+    updateBedsBathsTitle();
+  }
+
+  // Function for handling checkbox selection in "Home Type"
+  function updateHomeType() {
+    const checkboxes = document.querySelectorAll('input[name="home-type"]:checked');
+    selectedHomeTypes.clear();
+    checkboxes.forEach(checkbox => selectedHomeTypes.add(checkbox.value));
+    updateHomeTypeTitle();
+  }
+
+  // Function for toggling Select/Deselect All in "Home Type"
+  function toggleSelectAll(selectAll) {
+    const checkboxes = document.querySelectorAll('input[name="home-type"]');
+    checkboxes.forEach(checkbox => checkbox.checked = selectAll);
+    updateHomeType();
+  }
+
+  // Function for applying selections in "Home Type"
+  function applyHomeType() {
+    updateHomeTypeTitle();
+  }
+
+  // Function for populating the "Price Range" dropdown
   function populateMaxPrice() {
     const maxPriceSelect = document.getElementById('max-price');
     for (let i = 50000; i <= 1000000; i += 50000) {
@@ -121,33 +195,15 @@
     }
   }
 
+  // Function for applying the price range selection
   function applyPriceRange() {
-    const minPrice = document.getElementById('min-price').value;
-    const maxPrice = document.getElementById('max-price').value;
-    const priceRangeTitle = document.getElementById('price-range-title');
-    priceRangeTitle.textContent = `$${minPrice} - $${parseInt(maxPrice).toLocaleString()}`;
+    updatePriceTitle();
   }
 
-  let selectedOptions = {
-    bedrooms: 'any',
-    bathrooms: 'any'
-  };
-
-  // Function to handle option selection
-  function selectOption(category, value) {
-    selectedOptions[category] = value;
-  }
-
-  // Function to apply the selected options and update the title
-  function applyBedsBaths() {
-    const title = `${selectedOptions.bedrooms} bd, ${selectedOptions.bathrooms} ba`;
-    document.getElementById('beds-baths-title').textContent = title;
-  }
-
-  // Populate the maximum price dropdown on page load
+  // Initial setup on page load
   window.onload = populateMaxPrice;
-
 </script>
+
 
 
 </body>
