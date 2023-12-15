@@ -44,6 +44,7 @@
 			<option value="Manufactured">Manufactured</option>
 			<option value="Condos">Condos</option>
 			<option value="LotsLand">Lots/Land</option>
+			<option value="SINGLE_FAMILY">single</option>
 		</select>
 	</div>
 </div>
@@ -53,7 +54,7 @@
 	const districts = [
 		{
 			name: "District 1",
-			zipCodes: ["77091", "77096", "77093", "77022", "77018", "77092", "77055", "77008", "77009", "77007", "77024", "77057", "77056", "77027", "77081"],
+			zipCodes: ["77091", "77096", "77093", "77022"],
 			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_1.geojson"
 		},
 		{
@@ -62,6 +63,9 @@
 			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_2.geojson"
 		},
 	];
+
+
+
 
 	function initialize() {
 		map = new google.maps.Map(document.getElementById('map'), {
@@ -112,7 +116,7 @@
 			}
 		};
 
-		const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}&home_type=${propertyType}`;
+		const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}`;
 		const response = await fetch(url, options);
 		const data = await response.json();
 
@@ -138,6 +142,7 @@
 		}
 	}
 
+	let allDisplayedHouses = [];
 
 
 
@@ -152,17 +157,37 @@
 		};
 
 		houses.forEach(house => {
-			new google.maps.Marker({
+			const marker = new google.maps.Marker({
 				position: { lat: house.latitude, lng: house.longitude },
 				map: map,
 				icon: redMarker
 			});
 
-
+			// Add marker to global list
+			allDisplayedHouses.push({ house, marker });
 		});
-
-
 	}
+
+	function onPropertyTypeChange() {
+		const selectedType = document.getElementById('propertyTypes').value;
+
+		if (selectedType === "SINGLE_FAMILY") {
+			const singleFamilyHouses = allDisplayedHouses.filter(({ house }) => house.propertyType === "SINGLE_FAMILY");
+			console.log(`Single Family Homes Count: ${singleFamilyHouses.length}`);
+
+			// Hide markers that are not single-family homes
+			allDisplayedHouses.forEach(({ house, marker }) => {
+				if (house.propertyType !== "SINGLE_FAMILY") {
+					marker.setMap(null); // Hide marker
+				}
+			});
+		} else {
+			// Show all markers when other property types are selected
+			allDisplayedHouses.forEach(({ marker }) => marker.setMap(map));
+		}
+	}
+
+	document.getElementById('propertyTypes').addEventListener('change', onPropertyTypeChange);
 
 	async function fetchGeoJson(url) {
 		try {

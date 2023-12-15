@@ -217,6 +217,117 @@ https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojso
 77489
 77477
 
+copy eth zilow filter nav bar and make sure it wprks with your filters
+
+    drop down:
+        name : price range
+        list price button
+        minimum [enter number]
+
+        drop down
+        maximum
+        dropdown selections are 50,000, 100,000, 150,000 [incrementing by 50,000, until reaching 1,000,000]
+
+    drop down:(button named:beds & baths)
+    (inside teh dropdown it has 2 selection)
+    selction 1
+    titled:
+    bedrooms:
+    (buttons are below the bedrooms title)
+    option buttons are any , 1, 2 , 3, 4, 5,
+    selction 2
+        titled:
+    bathrooms:
+        (buttons are below the bedrooms title)
+        option buttons are any , 1, 2 , 3, 4, 5,
+    apply button below bathromms
+
+    drop down titled, home type
+    (checkboxes for all)
+    house, townhomes, ulty-family-condos/co-ops
+    lots/land
+    apartments,
+    manufactured
+
+    dropdown tltled, more
+
+    another dropdown within, "dropdown tltled, more"
+    titled:max haa
+    below that is a dropswn titled, any, , hals selectiosn 100 - 1000
+
+    another dropdown within, "dropdown tltled, more"
+    tiytled:listing type
+    has radio buttons
+    -by agent
+    -by owner or other
+
+    another dropdown within, "dropdown tltled, more"
+    titled:property status
+    all of these are check box
+    -coming soon , accepting offers, pendeing and under contract
+
+    another dropdown within, "dropdown tltled, more"
+    titled:tours
+    all of these are check box
+    - must have open house, must have 3d tour
+
+    another dropdown within, "dropdown tltled, more"
+    titled:parking spots
+    dropdown with numbers 1-5
+    underneath it has a checkmark , it hs "mustt have garage"
+
+    another dropdown within, "dropdown tltled, more"
+    titled:sqiure feet
+        dropdown tiled:no min[has dropodwn 1000-5000]
+        dropdown tiled:no max[has dropodwn 1000-5000]
+
+another dropdown within, "dropdown tltled, more"
+    titled:lot size
+        dropdown tiled:no min[has dropodwn 1000 sqft - 1 acre ] (incrementong by 1000)
+        dropdown tiled:no max[has dropodwn 1000 sqft - 1 acre ] (incrementong by 1000)
+
+another dropdown within, "dropdown tltled, more"
+    titled:year build
+    2 input boxes placehoders "no min", no max
+
+another dropdown within, "dropdown tltled, more"
+    titled:basement
+    checkbox:hasd baseemnt
+
+another dropdown within, "dropdown tltled, more"
+    titled:number of stories
+    checkbox:single stories only
+
+another dropdown within, "dropdown tltled, more"
+    titled:senior living
+    checkbox:hide 55+ communities
+
+another dropdown within, "dropdown tltled, more"
+    titled:other anemeties
+    checkbox: must have a/c
+    checkbox:must have pool
+    checkbox:waterfront
+
+another dropdown within, "dropdown tltled, more"
+    title;view
+    checkbox:city
+    checkbox:mountain
+    checkbox:park
+    checkbox:water
+
+
+another dropdown within, "dropdown tltled, more"
+    titled:days on zillow
+    dropdown titled:
+    any
+    selections:
+    1,7,14, 30, 90, 6 months, 12 mon, 24
+
+another dropdown within, "dropdown tltled, more"
+        keywords: input field placeholder[MLS, yard , etc]
+
+
+
 To adjust GeoJSON boundaries to accurately represent school district areas that may not align with the given zip code boundaries, you have a few options:
 
 Here's a user story to describe how a user would interact with your application:

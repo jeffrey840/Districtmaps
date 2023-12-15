@@ -1,0 +1,109 @@
+<!-- path/filename: dynamic-dropdown.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dynamic Dropdown</title>
+  <style>
+    /* Basic styling for dropdown */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <ul>
+    <li class="dropdown">
+      <a href="#" id="dropdown-title">For Sale</a>
+      <div class="dropdown-content">
+        <a href="#" onclick="updateTitle('For Sale')">For Sale</a>
+        <a href="#" onclick="updateTitle('For Rent')">For Rent</a>
+        <a href="#" onclick="updateTitle('Sold')">Sold</a>
+      </div>
+    </li>
+  </ul>
+
+  <ul>
+    <!-- Price Range Dropdown -->
+    <li class="dropdown">
+      <a href="#">Price Range</a>
+      <div class="dropdown-content">
+        <form id="price-range-form">
+          <label for="min-price">Minimum</label>
+          <input type="number" id="min-price" placeholder="Enter number">
+          <label for="max-price">Maximum</label>
+          <select id="max-price">
+            <!-- Options added via JavaScript -->
+          </select>
+          <button type="button" onclick="listPrice()">apply</button>
+        </form>
+      </div>
+    </li>
+  </ul>
+
+</nav>
+
+<script>
+  function updateTitle(newTitle) {
+    document.getElementById('dropdown-title').textContent = newTitle;
+  }
+
+  function populateMaxPrice() {
+    const maxPriceSelect = document.getElementById('max-price');
+    for (let i = 50000; i <= 1000000; i += 50000) {
+      let option = document.createElement('option');
+      option.value = i;
+      option.textContent = `$${i.toLocaleString()}`;
+      maxPriceSelect.appendChild(option);
+    }
+  }
+
+  // Function to handle the listing of prices
+  function listPrice() {
+    const minPrice = document.getElementById('min-price').value;
+    const maxPrice = document.getElementById('max-price').value;
+    // Implement logic to handle the listing based on selected prices
+    console.log(`Listing properties from $${minPrice} to $${maxPrice}`);
+  }
+
+  // Populate the maximum price dropdown on page load
+  window.onload = populateMaxPrice;
+
+</script>
+
+<!--thsi dropdown does not effetc teh previous dropdown-->
+<!--next drop titled price when cliicked-->
+<!--drop down:-->
+<!--name : price range-->
+<!--list price button-->
+<!--minimum [enter number]-->
+
+<!--drop down-->
+<!--maximum-->
+<!--dropdown selections are 50,000, 100,000, 150,000 [incrementing by 50,000, until reaching 1,000,000]-->
+
+</body>
+</html>
