@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Display Listings in Multiple Districts with GeoJSON Overlay</title>
+	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADd7NKHfGXY1FLZn4z260m0pwnhFcA1gE&callback=initialize" async defer></script>
+	<style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+        #selectors {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: white;
+            padding: 5px;
+            border-radius: 5px;
+        }
+	</style>
+</head>
+<body>
+
+<div id="map"></div>
+<div id="selectors">
+	<div id="districtSelector">
+		<label for="districts">Select District:</label>
+		<select id="districts" onchange="loadDistrictData(this.value)">
+			<option value="1">District 1</option>
+			<option value="2">District 2</option>
+		</select>
+	</div>
+
+	<div id="propertyTypeSelector">
+		<label for="propertyTypes">Select Property Type:</label>
+		<select id="propertyTypes">
+			<option value="">All Types</option>
+			<option value="Townhomes">Townhomes</option>
+			<option value="Houses">Houses</option>
+			<option value="Apartments_Condos_Co-ops">Apartments/Condos/Co-ops</option>
+			<option value="Multi-family">Multi-family</option>
+			<option value="Apartments">Apartments</option>
+			<option value="Manufactured">Manufactured</option>
+			<option value="Condos">Condos</option>
+			<option value="LotsLand">Lots/Land</option>
+		</select>
+	</div>
+</div>
+
+<script>
+	let map;
+	const districts = [
+		{
+			name: "District 1",
+			zipCodes: ["77091", "77096", "77093", "77022", "77018", "77092", "77055", "77008", "77009", "77007", "77024", "77057", "77056", "77027", "77081"],
+			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_1.geojson"
+		},
+		{
+			name: "District 2",
+			zipCodes: ["77088", "77037", "77016", "77050", ],
+			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_2.geojson"
+		},
+	];
+
+	function initialize() {
+		map = new google.maps.Map(document.getElementById('map'), {
+			zoom: 12,
+			center: { lat: 29.842912, lng: -95.323 }
+		});
+	}
+
+	async function loadDistrictData(districtNumber) {
+		map.data.forEach(feature => map.data.remove(feature)); // Clear existing data
+
+		const selectedDistrict = districts.find(d => d.name === `District ${districtNumber}`);
+		if (!selectedDistrict) return;
+
+		const districtGeoJson = await fetchGeoJson(selectedDistrict.geoJsonUrl);
+		map.data.addGeoJson(districtGeoJson);
+		map.data.setStyle({
+			fillColor: 'blue',
+			strokeWeight: 1
+		});
+
+		for (const zipCode of selectedDistrict.zipCodes) {
+			let success = false;
+			let attempts = 0;
+
+			while (!success && attempts < 3) { // Retry up to 3 times
+				try {
+					await fetchHouses(zipCode, districtGeoJson);
+					success = true;
+				} catch (error) {
+					console.error(`Error fetching data for ZIP code ${zipCode}:`, error);
+					attempts++;
+					await delay(3000); // Wait for 3 seconds before retrying
+				}
+			}
+			await delay(3000); // Wait for 3 seconds before next ZIP code
+		}
+	}
+
+	async function fetchHouses(zipCode, districtGeoJson) {
+		const propertyType = document.getElementById('propertyTypes').value;
+		const apiKey = '206a0782demsh5a1d5a242226a6dp1f6b6cjsnf08b18ac4dfa';
+		const options = {
+			method: 'GET',
+			headers: {
+				'X-RapidAPI-Key': apiKey,
+				'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+			}
+		};
+
+		const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}&home_type=${propertyType}`;
+		const response = await fetch(url, options);
+		const data = await response.json();
+
+		if (data && data.props) {
+			const homeTypes = new Set(data.props.map(house => house.home_type));
+
+			// Log the zip code and the unique home types
+			console.log(`Zip Code: ${zipCode}, Home Types: ${Array.from(homeTypes).join(', ')}`);
+
+			const filteredHouses = data.props.filter(house => {
+				if (!house.latitude || !house.longitude) return false;
+				const point = turf.point([house.longitude, house.latitude]);
+				const polygon = districtGeoJson.features[0].geometry;
+				return turf.booleanPointInPolygon(point, polygon);
+			});
+
+			displayHousesOnMap(filteredHouses);
+		}
+	}
+
+
+	function displayHousesOnMap(houses) {
+		const redMarker = {
+			path: google.maps.SymbolPath.CIRCLE,
+			fillColor: 'red',
+			fillOpacity: 1,
+			scale: 5,
+			strokeColor: 'red',
+			strokeWeight: 1
+		};
+
+		houses.forEach(house => {
+			new google.maps.Marker({
+				position: { lat: house.latitude, lng: house.longitude },
+				map: map,
+				icon: redMarker
+			});
+
+
+		});
+
+
+	}
+
+	async function fetchGeoJson(url) {
+		try {
+			const response = await fetch(url);
+			return await response.json();
+		} catch (error) {
+			console.error("Error fetching GeoJSON data:", error);
+			return null;
+		}
+	}
+
+	function delay(ms) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+</script>
+</body>
+</html>
