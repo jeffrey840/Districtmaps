@@ -117,11 +117,6 @@
 		const data = await response.json();
 
 		if (data && data.props) {
-			const homeTypes = new Set(data.props.map(house => house.home_type));
-
-			// Log the zip code and the unique home types
-			console.log(`Zip Code: ${zipCode}, Home Types: ${Array.from(homeTypes).join(', ')}`);
-
 			const filteredHouses = data.props.filter(house => {
 				if (!house.latitude || !house.longitude) return false;
 				const point = turf.point([house.longitude, house.latitude]);
@@ -129,9 +124,21 @@
 				return turf.booleanPointInPolygon(point, polygon);
 			});
 
+			// Asynchronously log counts of each property type for the current zip code
+			setTimeout(() => {
+				const propertyTypeCounts = filteredHouses.reduce((acc, house) => {
+					acc[house.propertyType] = (acc[house.propertyType] || 0) + 1;
+					return acc;
+				}, {});
+
+				console.log(`Property Type Counts for Zip Code: ${zipCode}:`, propertyTypeCounts);
+			}, 0);
+
 			displayHousesOnMap(filteredHouses);
 		}
 	}
+
+
 
 
 	function displayHousesOnMap(houses) {
