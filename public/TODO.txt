@@ -220,22 +220,6 @@ https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojso
 copy eth zilow filter nav bar and make sure it wprks with your filters
 
 
-    drop down titled, home type
-    if teh house checkbox is pressed the dropdown  title will chnage, it will appear like this,
-
-    "home type(1)", if "townhomes," is also selected the hometype will increase like thsi , home type(2), the (1, and 2 numbers repreent teh avalable lisings), for now just focus on adding thsi fuctionality and displaying it
-
-    radio button titled: deselect all(if pressed deselects the checkmarks for this dropdown)
-
-    (checkboxes for all)
-    house,
-    townhomes,
-    Multy-family-condos/co-ops
-    lots/land
-    apartments,
-    manufactured
-
-    apply button
 
     dropdown tltled, more
 

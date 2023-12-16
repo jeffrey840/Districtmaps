@@ -1,0 +1,138 @@
+
+<!--todo:left on dec 16 9:47 am , listings can not toggle back and forth, Possible solution for filtering: fetch all listings from github, have button log all the townhomes, another button log houses to distinguish listings, then show and hide based on property type.   -->
+
+<!--todo:left on dec 16 9:58 am , need to look into how i can store the abundant listings for zipcode. The relation is: one district has many zipcodes, One zipcode has many listings, so far i have hosted some of the json in github, this is the link, https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zillow_listings_77091_page1.json   -->
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Display Property Data and Toggle Townhomes on Google Maps</title>
+	<style>
+        /* Add styles for the map container */
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+	</style>
+</head>
+<body>
+
+<h1>Count of Townhomes in Property Data</h1>
+
+<!-- Add a toggle button to show/hide townhomes -->
+<button onclick="toggleTownhomes()">Toggle Townhomes</button>
+
+<!-- Add a div to hold the Google Map -->
+<div id="map"></div>
+
+<script>
+	let map; // Define the map variable
+	let allMarkers = []; // Array to store all markers
+
+	async function fetchAndDisplayProperties(url) {
+		try {
+			const response = await fetch(url);
+
+			if (!response.ok) {
+				throw new Error('Network response was not ok.');
+			}
+
+			const data = await response.json();
+
+			if (!data || !Array.isArray(data.props)) {
+				throw new Error('Invalid data format or empty properties array.');
+			}
+
+			console.log('Property Data:');
+			console.log(data.props); // Log property data to console
+
+			// Create a map object and specify the DOM element for display
+			map = new google.maps.Map(document.getElementById('map'), {
+				zoom: 12, // Adjust the initial zoom level as needed
+				center: { lat: 29.674, lng: -95.49 } // Set an initial center for the map
+			});
+
+			// Display markers for all properties on the map
+			data.props.forEach(property => {
+				const marker = new google.maps.Marker({
+					position: { lat: property.latitude, lng: property.longitude },
+					map: map,
+					title: property.address // Display property address as marker title
+				});
+				allMarkers.push(marker); // Add markers to the array
+			});
+
+		} catch (error) {
+			console.error('Error fetching or displaying data:', error);
+		}
+	}
+
+	// Function to toggle the display of townhomes
+	function toggleTownhomes() {
+		const endpointURL = 'https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zillow_listings_77096_page1.json';
+
+		if (document.getElementById('map').style.display !== 'none') {
+			fetchAndDisplayTownhomes(endpointURL);
+		} else {
+			document.getElementById('map').style.display = 'block';
+			allMarkers.forEach(marker => {
+				marker.setMap(map); // Display all markers again
+			});
+		}
+	}
+
+	async function fetchAndDisplayTownhomes(url) {
+		try {
+			const response = await fetch(url);
+
+			if (!response.ok) {
+				throw new Error('Network response was not ok.');
+			}
+
+			const data = await response.json();
+
+			if (!data || !Array.isArray(data.props)) {
+				throw new Error('Invalid data format or empty properties array.');
+			}
+
+			console.log('Townhomes Data:');
+			console.log(data.props); // Log townhomes data to console
+
+			// Hide all markers first
+			allMarkers.forEach(marker => {
+				marker.setMap(null);
+			});
+
+			// Filter townhomes and display markers for them on the map
+			const townhomes = data.props.filter(property => property.propertyType === 'TOWNHOUSE');
+			townhomes.forEach(property => {
+				const marker = new google.maps.Marker({
+					position: { lat: property.latitude, lng: property.longitude },
+					map: map,
+					title: property.address // Display property address as marker title
+				});
+				allMarkers.push(marker); // Add markers to the array
+			});
+
+		} catch (error) {
+			console.error('Error fetching or displaying townhomes:', error);
+		}
+	}
+
+	// Load the Google Maps JavaScript API
+	function initMap() {
+		const endpointURL = 'https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zillow_listings_77096_page1.json';
+
+		fetchAndDisplayProperties(endpointURL);
+	}
+</script>
+
+<!-- Load the Google Maps JavaScript API asynchronously -->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADd7NKHfGXY1FLZn4z260m0pwnhFcA1gE&callback=initMap"></script>
+<!-- Replace 'YOUR_API_KEY' with your actual Google Maps API key -->
+
+</body>
+</html>

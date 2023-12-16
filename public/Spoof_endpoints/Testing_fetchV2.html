@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Display Property Data on Google Maps</title>
+  <style>
+    /* Add styles for the map container */
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Property Locations on Google Maps</h1>
+
+<!-- Add a div to hold the Google Map -->
+<div id="map"></div>
+
+<script>
+  // Function to initialize Google Map
+  function initMap() {
+    const map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 12, // Adjust the initial zoom level as needed
+      center: { lat: 29.674, lng: -95.49 } // Set an initial center for the map
+    });
+
+    // Fetch property data and display markers
+    async function fetchAndDisplayPropertyData(url) {
+      try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok.');
+        }
+
+        const data = await response.json();
+
+        if (!data || !Array.isArray(data.props)) {
+          throw new Error('Invalid data format or empty properties array.');
+        }
+
+        console.log('Property Data:');
+        console.log(data.props); // Log property data to console
+
+        // Process property data and add markers on the map
+        data.props.forEach(property => {
+          const marker = new google.maps.Marker({
+            position: { lat: property.latitude, lng: property.longitude },
+            map: map,
+            title: property.address // Display property address as marker title
+            // You can add more details/info to the marker if needed
+          });
+        });
+
+      } catch (error) {
+        console.error('Error fetching or displaying data:', error);
+      }
+    }
+
+    // JSON endpoint URL
+    const endpointURL = 'https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zillow_listings_77096_page1.json';
+
+    // Call function to fetch and display property data on the map
+    fetchAndDisplayPropertyData(endpointURL);
+  }
+
+  // Load the Google Maps JavaScript API
+  function loadMapScript() {
+    const script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyADd7NKHfGXY1FLZn4z260m0pwnhFcA1gE&callback=initMap';
+    // Replace 'YOUR_API_KEY' with your actual Google Maps API key
+    document.head.appendChild(script);
+  }
+
+  // Call function to load the map
+  loadMapScript();
+</script>
+
+</body>
+</html>
