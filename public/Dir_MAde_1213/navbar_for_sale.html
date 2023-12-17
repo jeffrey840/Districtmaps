@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dynamic Dropdown</title>
+  <style>
+    /* Basic styling for dropdown */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <ul>
+    <li class="dropdown">
+      <a href="#" id="dropdown-title">For Sale</a>
+      <div class="dropdown-content">
+        <a href="#" onclick="updateSaleTitleAndFetch('ForSale')">For Sale</a>
+        <a href="#" onclick="updateSaleTitleAndFetch('ForRent')">For Rent</a>
+        <a href="#" onclick="updateSaleTitleAndFetch('RecentlySold')">Sold</a>
+      </div>
+    </li>
+  </ul>
+</nav>
+
+<script>
+  function updateSaleTitleAndFetch(selectedOption) {
+    document.getElementById('dropdown-title').textContent = selectedOption;
+    fetchHouses('98052', {}, selectedOption); // Example ZIP code and empty GeoJSON object
+  }
+
+  async function fetchHouses(zipCode, districtGeoJson, selectedOption) {
+    const apiKey = '206a0782demsh5a1d5a242226a6dp1f6b6cjsnf08b18ac4dfa'; // Replace with your Zillow API key
+    const options = {
+      method: 'GET',
+      headers: {
+        'X-RapidAPI-Key': apiKey,
+        'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+      }
+    };
+
+    // Modify the URL to include the selected option if the API supports it
+    const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}&status_type=${encodeURIComponent(selectedOption)}`;
+    console.log('Fetching houses from API:', url); // Log the URL being fetched
+    const response = await fetch(url, options);
+    const data = await response.json();
+
+    console.log('Received data:', data); // Log the response data
+    // Additional processing of the data can be implemented here
+  }
+
+  // Example initialization if needed
+  window.onload = function() {
+    // Any initialization code can go here
+  };
+</script>
+</body>
+</html>
