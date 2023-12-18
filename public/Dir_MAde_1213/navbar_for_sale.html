@@ -43,16 +43,26 @@
       </div>
     </li>
   </ul>
+  <div>
+    <input type="number" id="min-price" placeholder="Min Price">
+    <input type="number" id="max-price" placeholder="Max Price">
+    <input type="number" id="rent-min-price" placeholder="Min Rent Price">
+    <input type="number" id="rent-max-price" placeholder="Max Rent Price">
+  </div>
 </nav>
 
 <script>
   function updateSaleTitleAndFetch(selectedOption) {
     document.getElementById('dropdown-title').textContent = selectedOption;
-    fetchHouses('98052', {}, selectedOption); // Example ZIP code and empty GeoJSON object
+    const minPrice = document.getElementById('min-price').value;
+    const maxPrice = document.getElementById('max-price').value;
+    const rentMinPrice = document.getElementById('rent-min-price').value;
+    const rentMaxPrice = document.getElementById('rent-max-price').value;
+    fetchHouses('98052', {}, selectedOption, minPrice, maxPrice, rentMinPrice, rentMaxPrice);
   }
 
-  async function fetchHouses(zipCode, districtGeoJson, selectedOption) {
-    const apiKey = '206a0782demsh5a1d5a242226a6dp1f6b6cjsnf08b18ac4dfa'; // Replace with your Zillow API key
+  async function fetchHouses(zipCode, districtGeoJson, selectedOption, minPrice, maxPrice, rentMinPrice, rentMaxPrice) {
+    const apiKey = '206a0782demsh5a1d5a242226a6dp1f6b6cjsnf08b18ac4dfa';
     const options = {
       method: 'GET',
       headers: {
@@ -61,19 +71,26 @@
       }
     };
 
-    // Modify the URL to include the selected option if the API supports it
-    const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}&status_type=${encodeURIComponent(selectedOption)}`;
-    console.log('Fetching houses from API:', url); // Log the URL being fetched
+    let url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}&status_type=${encodeURIComponent(selectedOption)}`;
+
+    // Add price range parameters based on the selected option
+    if (selectedOption === 'ForSale' || selectedOption === 'RecentlySold') {
+      if (minPrice) url += `&minPrice=${minPrice}`;
+      if (maxPrice) url += `&maxPrice=${maxPrice}`;
+    } else if (selectedOption === 'ForRent') {
+      if (rentMinPrice) url += `&rentMinPrice=${rentMinPrice}`;
+      if (rentMaxPrice) url += `&rentMaxPrice=${rentMaxPrice}`;
+    }
+
+    console.log('Fetching houses from API:', url);
     const response = await fetch(url, options);
     const data = await response.json();
 
-    console.log('Received data:', data); // Log the response data
-    // Additional processing of the data can be implemented here
+    console.log('Received data:', data);
   }
 
-  // Example initialization if needed
   window.onload = function() {
-    // Any initialization code can go here
+    // Any initialization code
   };
 </script>
 </body>
