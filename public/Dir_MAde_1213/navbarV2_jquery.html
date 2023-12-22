@@ -146,6 +146,7 @@
     $('.dropdown-content a').click(function() {
       const dropdownId = $(this).closest('.dropdown').find('a').first().attr('id');
       $('#' + dropdownId).text($(this).text());
+      console.log(`Clicked on: ${$(this).text()}`);
     });
 
     // Apply button for price range
@@ -153,11 +154,13 @@
       const minPrice = $('#min-price').val();
       const maxPrice = $('#max-price').val();
       $('#price-range-title').text(`$${minPrice} - $${parseInt(maxPrice).toLocaleString()}`);
+      console.log(`Price Range Applied: $${minPrice} - $${parseInt(maxPrice).toLocaleString()}`);
     });
 
     // Selecting options for beds and baths
     $('.dropdown-content .option-button').click(function() {
       $(this).toggleClass('selected').siblings().removeClass('selected');
+      console.log(`Selected Option: ${$(this).text()}`);
     });
 
     // Apply button for beds and baths
@@ -165,6 +168,7 @@
       const bedrooms = $('#bedroom-options .option-button.selected').text() || 'any';
       const bathrooms = $('#bathroom-options .option-button.selected').text() || 'any';
       $('#beds-baths-title').text(`${bedrooms} bd, ${bathrooms} ba`);
+      console.log(`Beds & Baths Applied: ${bedrooms} bd, ${bathrooms} ba`);
     });
 
     // Home Type functionality
@@ -173,11 +177,13 @@
         return this.value;
       }).get();
       $('#home-type-title').text(`Home Type (${selectedTypes.length})`);
+      console.log(`Home Type Selection Changed`);
     });
 
     $('#home-type-form input[type="radio"]').change(function() {
       var selectAll = $(this).val() === 'Select All';
       $('#home-type-form input[type="checkbox"]').prop('checked', selectAll).change();
+      console.log(selectAll ? 'Select All Activated' : 'Deselect All Activated');
     });
 
     $('#home-type-form button').click(function() {
@@ -185,7 +191,18 @@
         return this.value;
       }).get();
       $('#home-type-title').text(`Home Type (${selectedTypes.length})`);
+      console.log(`Home Type Applied: ${selectedTypes.length} Types Selected`);
     });
+
+    // Log hover events on all buttons
+    $('button, .dropdown-content a').hover(
+            function() {
+              console.log(`Hovering over: ${$(this).text()}`);
+            },
+            function() {
+              console.log(`Stopped hovering over: ${$(this).text()}`);
+            }
+    );
   });
 </script>
 
