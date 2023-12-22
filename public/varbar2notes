@@ -1,6 +1,4 @@
 
 
-- also dinamically show me what im hovering over the price range title
-display that i selected x amount when my curser is outside the input box, i also want you to log the maximum orice that i selected if it was chaged before apply and to what number , the rprice range title should also display the correct title even before the number is applied
 
-for teh home type title , if i press select all the home type number is 0 , thsi shoudl be 2 becasue there are two property tipes , and house and town checkbox are not checkd
+

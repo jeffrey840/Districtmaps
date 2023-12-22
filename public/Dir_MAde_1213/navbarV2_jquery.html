@@ -187,6 +187,7 @@
 
     // Home Type functionality
     $('#home-type-form input[type="checkbox"]').change(function() {
+      updateHomeTypeTitleAndLog();
       var selectedTypes = $('#home-type-form input[type="checkbox"]:checked').map(function() {
         return this.value;
       }).get();
@@ -196,6 +197,7 @@
     });
 
     $('#home-type-form input[type="radio"]').change(function() {
+      updateHomeTypeTitleAndLog();
       var selectAll = $(this).val() === 'Select All';
       $('#home-type-form input[type="checkbox"]').prop('checked', selectAll).change();
     });
@@ -207,7 +209,18 @@
       $('#home-type-title').text(`Home Type (${selectedTypes.length})`);
       console.log(`Home Type Applied: ${selectedTypes.length} Types Selected`);
     });
+
+    function updateHomeTypeTitleAndLog() {
+      var selectedTypes = $('#home-type-form input[type="checkbox"]:checked').map(function() {
+        return this.value;
+      }).get();
+      var titleText = `Home Type (${selectedTypes.length})`;
+      $('#home-type-title').text(titleText);
+      console.log(`Home Type Applied: ${titleText}`);
+    }
+
   });
+
 </script>
 
 
