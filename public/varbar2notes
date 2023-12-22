@@ -1,5 +1,4 @@
 
-- i want you to display what teh current title is looking like  , for example if i press te for sale button i want to see that there isa looged statement that says current sold title sold
 
 - also dinamically show me what im hovering over the price range title
 display that i selected x amount when my curser is outside the input box, i also want you to log the maximum orice that i selected if it was chaged before apply and to what number , the rprice range title should also display the correct title even before the number is applied
