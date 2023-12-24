@@ -48,9 +48,9 @@
     <li class="dropdown">
       <a href="#" id="dropdown-title">For Sale</a>
       <div class="dropdown-content">
-        <a href="#" onclick="updateSaleTitle('For Sale')">For Sale</a>
-        <a href="#" onclick="updateSaleTitle('For Rent')">For Rent</a>
-        <a href="#" onclick="updateSaleTitle('Sold')">Sold</a>
+        <a href="#" class="sale-option" onclick="updateSaleTitle('ForSale')">For Sale</a>
+        <a href="#" class="sale-option" onclick="updateSaleTitle('ForRent')">For Rent</a>
+        <a href="#" class="sale-option" onclick="updateSaleTitle('RecentlySold')">Sold</a>
       </div>
     </li>
   </ul>
@@ -224,7 +224,51 @@
 </script>
 
 
+<script>
 
+  function updateSaleTitle(selectedOption) {
+    // Update the title
+    $('#dropdown-title').text(selectedOption);
+    console.log(`----Selected option: ${selectedOption}`);
+
+    // Assuming you want to call fetchHouses with some default values
+    const minPrice = $('#min-price').val();
+    const maxPrice = $('#max-price').val();
+    const rentMinPrice = $('#rent-min-price').val();
+    const rentMaxPrice = $('#rent-max-price').val();
+
+    fetchHouses('98052', {}, selectedOption, minPrice, maxPrice, rentMinPrice, rentMaxPrice);
+  }
+
+
+  async function fetchHouses(zipCode, districtGeoJson, selectedOption, minPrice, maxPrice, rentMinPrice, rentMaxPrice) {
+    const apiKey = '206a0782demsh5a1d5a242226a6dp1f6b6cjsnf08b18ac4dfa';
+    const options = {
+      method: 'GET',
+      headers: {
+        'X-RapidAPI-Key': apiKey,
+        'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+      }
+    };
+
+    let url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}&status_type=${encodeURIComponent(selectedOption)}`;
+
+    // Add price range parameters based on the selected option
+    if (selectedOption === 'ForSale' || selectedOption === 'RecentlySold') {
+      if (minPrice) url += `&minPrice=${minPrice}`;
+      if (maxPrice) url += `&maxPrice=${maxPrice}`;
+    } else if (selectedOption === 'ForRent') {
+      if (rentMinPrice) url += `&rentMinPrice=${rentMinPrice}`;
+      if (rentMaxPrice) url += `&rentMaxPrice=${rentMaxPrice}`;
+    }
+
+    console.log('Fetching houses from API:', url);
+    const response = await fetch(url, options);
+    const data = await response.json();
+
+    console.log('Received data:', data);}
+
+</script>
 
 
 
