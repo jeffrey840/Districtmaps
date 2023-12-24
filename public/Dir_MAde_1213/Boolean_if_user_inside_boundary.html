@@ -10,29 +10,29 @@
       height: 500px;
       width: 100%;
     }
+    #checkLocationBtn {
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
 <div id="map"></div>
+<button id="checkLocationBtn">Check My Location</button>
 <script>
   let map;
+  let geoJsonData;
 
-  function initMap(geoJsonData, pointCoordinates) {
-    // Initialize the map centered on the point
+  async function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
       zoom: 12,
-      center: { lat: pointCoordinates[1], lng: pointCoordinates[0] }
+      center: { lat: 29.7604, lng: -95.3698 } // Example coordinates (Houston, TX)
     });
 
-    // Display the GeoJSON polygon on the map
-    map.data.addGeoJson(geoJsonData);
-
-    // Create a marker for the point
-    new google.maps.Marker({
-      position: { lat: pointCoordinates[1], lng: pointCoordinates[0] },
-      map: map,
-      title: 'Your Location'
-    });
+    // Fetch and display GeoJSON overlay
+    geoJsonData = await fetchGeoJson('https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/merged_districts.geojson');
+    if (geoJsonData) {
+      map.data.addGeoJson(geoJsonData);
+    }
   }
 
   async function fetchGeoJson(url) {
@@ -45,28 +45,26 @@
     }
   }
 
-  function checkPointInGeoJsonPolygon(geoJsonData, pointCoordinates) {
+  function checkPointInGeoJsonPolygon(pointCoordinates) {
     const polygon = geoJsonData.features[0].geometry;
     const point = turf.point(pointCoordinates);
     const isInside = turf.booleanPointInPolygon(point, polygon);
 
-    // Initialize the map with the GeoJSON data and the point
-    initMap(geoJsonData, pointCoordinates);
+    // Create a marker for the point
+    new google.maps.Marker({
+      position: { lat: pointCoordinates[1], lng: pointCoordinates[0] },
+      map: map,
+      title: 'Your Location'
+    });
 
     alert(`Is your current location inside the GeoJSON polygon? ${isInside}`);
   }
 
   function getUserLocation() {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (position) => {
+      navigator.geolocation.getCurrentPosition((position) => {
         const pointCoordinates = [position.coords.longitude, position.coords.latitude];
-        const geoJsonData = await fetchGeoJson('https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/merged_districts.geojson');
-
-        if (geoJsonData) {
-          checkPointInGeoJsonPolygon(geoJsonData, pointCoordinates);
-        } else {
-          alert('Failed to load or process GeoJSON data.');
-        }
+        checkPointInGeoJsonPolygon(pointCoordinates);
       }, () => {
         alert('Error getting your location.');
       });
@@ -75,7 +73,9 @@
     }
   }
 
-  getUserLocation();
+  document.getElementById('checkLocationBtn').addEventListener('click', getUserLocation);
+
+  initMap();
 </script>
 </body>
 </html>
