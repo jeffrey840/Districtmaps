@@ -9,17 +9,18 @@
     <style>
         body {
             display: flex;
-            justify-content: space-between;
         }
         #searchContainer {
-            width: 30%;
+            width: 50%;
             display: flex;
             flex-direction: column;
+            justify-content: space-between; /* Aligns the search box and button */
+            height: 100vh; /* Full height of the viewport */
             padding: 10px;
         }
         #map {
-            height: 500px;
-            width: 70%;
+            height: 100vh; /* Full height of the viewport */
+            width: 50%;
         }
         #searchBox {
             width: 100%;
@@ -28,41 +29,47 @@
             border-radius: 4px;
             font-size: 16px;
             background-color: white;
-            background-position: 10px 10px;
-            background-repeat: no-repeat;
             padding: 12px 20px 12px 40px;
-            margin-bottom: 20px; /* Space for future elements */
+            margin-bottom: 10px; /* Space between search box and button */
+        }
+        #checkLocationBtn {
+            align-self: flex-end; /* Place button at the bottom */
         }
     </style>
 </head>
 <body>
     <div id="searchContainer">
         <input id="searchBox" type="text" placeholder="Enter an address...">
-        <!-- Space for future elements like buttons, toggles, etc. -->
+        <button id="checkLocationBtn">Check My Location</button>
     </div>
     <div id="map"></div>
     <script>
         let map, marker, geoJsonData;
 
-        function initMap() {
+        async function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 12,
                 center: { lat: 29.7604, lng: -95.3698 } // Default center (e.g., Houston, TX)
             });
+
+            // 1776 Gessner Rd, Houston, TX 77080 outside bounds
+            // 4701 Dickson St, Houston, TX 77007 within bounds
+
+
+            // Fetch and display GeoJSON overlay
+            geoJsonData = await fetchGeoJson('https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/merged_districts.geojson');
+            if (geoJsonData) {
+                map.data.addGeoJson(geoJsonData);
+            }
         }
 
-        async function fetchAndProcessGeoJson(url) {
+        async function fetchGeoJson(url) {
             try {
                 const response = await fetch(url);
-                geoJsonData = await response.json();
-                if (geoJsonData && geoJsonData.features) {
-                    map.data.addGeoJson(geoJsonData);
-                    document.getElementById('searchBox').disabled = false; // Enable search box after loading GeoJSON
-                } else {
-                    console.error("GeoJSON data is invalid.");
-                }
+                return await response.json();
             } catch (error) {
                 console.error("Error fetching GeoJSON data:", error);
+                return null;
             }
         }
 
@@ -89,7 +96,6 @@
                 alert('Failed to load or process GeoJSON data.');
             }
         }
-
 
         async function handleSearchInput(e) {
             if (e.key === 'Enter') {
@@ -124,14 +130,23 @@
             });
         }
 
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const pointCoordinates = [position.coords.longitude, position.coords.latitude];
+                    checkPointInGeoJsonPolygon(geoJsonData, pointCoordinates);
+                }, () => {
+                    alert('Error getting your location.');
+                });
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+
 
         document.getElementById('searchBox').addEventListener('keydown', handleSearchInput);
-        initMap(); // Initialize map
-        fetchAndProcessGeoJson('https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/merged_districts.geojson');
-
-        // 1776 Gessner Rd, Houston, TX 77080 outside bounds
-        // 4701 Dickson St, Houston, TX 77007 within bounds
-
+        document.getElementById('checkLocationBtn').addEventListener('click', getUserLocation);
+        initMap();
     </script>
 </body>
 </html>
