@@ -14,9 +14,9 @@
             width: 50%;
             display: flex;
             flex-direction: column;
-            height: 10vh; /* Full height of the viewport */
+            height: 100vh; /* Full height of the viewport */
             padding: 10px;
-            justify-content: flex-start; /* Aligns content to the top */
+            justify-content: space-between; /* Distributes space evenly */
         }
         #map {
             height: 100vh; /* Full height of the viewport */
@@ -30,17 +30,31 @@
             font-size: 16px;
             background-color: white;
             padding: 12px 20px 12px 40px;
-            margin-bottom: 10px; /* Space between search box and button */
         }
         #checkLocationBtn {
-            margin-top: auto; /* Pushes the button to the bottom */
+            align-self: center; /* Aligns the button to the center of its container */
+        }
+        .card {
+            width: 100%; /* Full width of the container */
+            margin-bottom: 10px; /* Space between cards */
+        }
+        * {
+            border: solid red 1px;
+            outline: dot-dot-dash green 1px;
         }
     </style>
 </head>
 <body>
 <div id="searchContainer">
     <input id="searchBox" type="text" placeholder="Enter an address...">
+
     <button id="checkLocationBtn">Check My Location</button>
+
+    <div class="card">Card 1</div>
+    <div class="card">Card 2</div>
+    <div class="card">Card 3</div>
+
+
 </div>
 <div id="map"></div>
 <script>
