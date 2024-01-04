@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zillow Listings 2</title>
+  <!-- Import Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container-fluid" style="font-family: 'Lato', sans-serif;">
+  <div class="row">
+    <!-- Vertically scrollable container with two columns and four rows -->
+    <div class="col-6" style="height: 800px; overflow-y: auto;">
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 10px;">
+        <!-- Repeat for each card, total 8 cards for 2 columns and 4 rows -->
+        <div class="card" style="width: 100%; max-width: 200px; margin-bottom: 10px; border: solid red 1px;">
+          <div class="photo placeholder-img" style="height: 120px; background-position: center; background-repeat: no-repeat; background-size: cover; display: flex; justify-content: space-between; background-image: url('https://www.stlouis.style/wp-content/uploads/2016/06/flwright-ebsworth-house-1.jpg');">
+            <div class="time" style="background: rgba(0,0,0,.54); padding: 5px 10px; display: inline-block; color: white; font-size: 0.8em;height: 19%;">2 days ago</div>
+            <div class="heart static" style="width: 40px; height: 40px; display: flex; justify-content: center;">
+              <svg id="heart" width="30px" height="30px" style="align-self: center;">
+                <path id="heart-path" class="no-love" style="fill: none; stroke: white; stroke-width: 2px;" d="M 20 9 V 9 C 24 0 32 0 36 8.64 S 20 30 20 30.24 C 20 30.24 20 30 20 30.24 S 0 17.28 4 8.64 C 8 0 16 0 20 9"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="description" style="padding: 8px;">
+            <div class="price" style="font-size: 1.2em; font-weight: bolder;">$263,000</div>
+            <div class="info" style="font-size: 0.75em;">2 bds 3 ba 1,900 sqft - For sale by realtor</div>
+            <div class="address" style="font-size: 0.75em;">120 North Ballas Road, Kirkwood, MO 63122</div>
+          </div>
+        </div>
+        <div class="card" style="width: 100%; max-width: 200px; margin-bottom: 10px; border: solid red 1px;">
+          <div class="photo placeholder-img" style="height: 120px; background-position: center; background-repeat: no-repeat; background-size: cover; display: flex; justify-content: space-between; background-image: url('https://www.stlouis.style/wp-content/uploads/2016/06/flwright-ebsworth-house-1.jpg');">
+            <div class="time" style="background: rgba(0,0,0,.54); padding: 5px 10px; display: inline-block; color: white; font-size: 0.8em;height: 19%;">2 days ago</div>
+            <div class="heart static" style="width: 40px; height: 40px; display: flex; justify-content: center;">
+              <svg id="heart" width="30px" height="30px" style="align-self: center;">
+                <path id="heart-path" class="no-love" style="fill: none; stroke: white; stroke-width: 2px;" d="M 20 9 V 9 C 24 0 32 0 36 8.64 S 20 30 20 30.24 C 20 30.24 20 30 20 30.24 S 0 17.28 4 8.64 C 8 0 16 0 20 9"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="description" style="padding: 8px;">
+            <div class="price" style="font-size: 1.2em; font-weight: bolder;">$263,000</div>
+            <div class="info" style="font-size: 0.75em;">2 bds 3 ba 1,900 sqft - For sale by realtor</div>
+            <div class="address" style="font-size: 0.75em;">120 North Ballas Road, Kirkwood, MO 63122</div>
+          </div>
+        </div>
+          <!-- Card content -->
+        </div>
+        <!-- ... Additional cards ... -->
+      </div>
+    </div>
+
+    <!-- The remaining half of the page -->
+<!--    <div class="col-6">-->
+<!--      &lt;!&ndash; Content for the right half of the page &ndash;&gt;-->
+<!--    </div>-->
+  </div>
+
+</body>
+</html>
