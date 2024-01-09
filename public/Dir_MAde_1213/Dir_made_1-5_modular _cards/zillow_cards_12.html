@@ -65,6 +65,14 @@
 					<div class="dropdown-menu">
 						<div class="px-4 py-3" id="bedroom-options">
 							<!-- Bedroom option buttons (Unchanged) -->
+							<span>Bedrooms:</span>
+							<!-- Bathroom option buttons updated to call filterByBathrooms -->
+							<button class="btn btn-outline-secondary m-1" onclick="filterByBedrooms('any')">Any</button>
+							<button class="btn btn-outline-secondary m-1" onclick="filterByBedrooms(1)">1</button>
+							<button class="btn btn-outline-secondary m-1" onclick="filterByBedrooms(2)">2</button>
+							<button class="btn btn-outline-secondary m-1" onclick="filterByBedrooms(3)">3</button>
+							<button class="btn btn-outline-secondary m-1" onclick="filterByBedrooms(4)">4</button>
+							<button class="btn btn-outline-secondary m-1" onclick="filterByBedrooms(5)">5</button>
 						</div>
 						<div class="px-4 py-3" id="bathroom-options">
 							<span>Bathrooms:</span>
@@ -183,6 +191,11 @@
 	function filterByBathrooms(bathCount) {
 		// Check if 'any' is selected, then don't filter by bathrooms
 		const filtered = bathCount === 'any' ? filteredData : filteredData.filter(card => card.bathrooms === bathCount);
+		createCards(filtered);
+	}
+	function filterByBedrooms(bedrooms) {
+		// Check if 'any' is selected, then don't filter by bathrooms
+		const filtered = bedrooms === 'any' ? filteredData : filteredData.filter(card => card.bedrooms === bedrooms);
 		createCards(filtered);
 	}
 	// Call the fetchAndExtractData function when the DOM content is loaded
