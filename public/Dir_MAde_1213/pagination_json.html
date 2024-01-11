@@ -5,21 +5,45 @@
   <title>Zillow API Pagination</title>
 </head>
 <body>
-<button id="fetchData">Fetch Properties for Sale</button>
+
+<button id="fetchForSale">Fetch Properties for Sale</button>
+<button id="fetchForRent">Fetch Properties for Rent</button>
+<button id="fetchRecentlySold">Fetch Recently Sold Properties</button>
 <button id="nextPage" disabled>Next Page</button>
 <button id="prevPage" disabled>Previous Page</button>
-<div id="results"></div>
+<pre id="results"></pre>
 
 <script>
 
   let currentPage = 1;
+  let currentType = 'ForSale'; // Default type
 
-  document.getElementById('fetchData').addEventListener('click', () => fetchData(currentPage));
+  document.getElementById('fetchForSale').addEventListener('click', () => {
+    if (currentType !== 'ForSale') {
+      currentType = 'ForSale';
+      currentPage = 1; // Reset to first page
+    }
+    fetchData(currentPage);
+  });
+  document.getElementById('fetchForRent').addEventListener('click', () => {
+    if (currentType !== 'ForRent') {
+      currentType = 'ForRent';
+      currentPage = 1; // Reset to first page
+    }
+    fetchData(currentPage);
+  });
+  document.getElementById('fetchRecentlySold').addEventListener('click', () => {
+    if (currentType !== 'RecentlySold') {
+      currentType = 'RecentlySold';
+      currentPage = 1; // Reset to first page
+    }
+    fetchData(currentPage);
+  });
   document.getElementById('nextPage').addEventListener('click', () => fetchData(++currentPage));
   document.getElementById('prevPage').addEventListener('click', () => fetchData(--currentPage));
 
   async function fetchData(pageNumber) {
-    const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=77080&status_type=ForSale&page=${pageNumber}`;
+    const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=77080&status_type=${currentType}&page=${pageNumber}`;
     const options = {
       method: 'GET',
       headers: {
@@ -40,21 +64,16 @@
   }
 
   function displayResults(data) {
-    // Assuming 'data' contains the results to be displayed
-    // Update your DOM accordingly
     const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = JSON.stringify(data, null, 2); // Simple display, format as needed
+    resultsDiv.textContent = JSON.stringify(data, null, 2);
   }
 
   function handlePaginationButtons(data) {
-    // Assuming 'data' contains the necessary pagination info
     document.getElementById('nextPage').disabled = currentPage >= data.totalPages;
     document.getElementById('prevPage').disabled = currentPage <= 1;
   }
 
-  // Initially load the first page
-  fetchData(currentPage);
-
+  fetchData(currentPage); // Load the first page for 'For Sale' on startup
 
 </script>
 </body>
