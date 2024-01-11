@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+</head>
+<body>
+<script>
+
+	async function fetchData() {
+		const url = 'https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=77080&status_type=ForSale';
+		const options = {
+			method: 'GET',
+			headers: {
+				'X-RapidAPI-Key': '206a0782demsh5a1d5a242226a6dp1f6b6cjsnf08b18ac4dfa',
+				'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+			}
+		};
+
+		try {
+			const response = await fetch(url, options);
+			const data = await response.json();
+			console.log(data);
+			createDownloadLink(data);
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	function createDownloadLink(data) {
+		const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+		const downloadAnchorNode = document.createElement('a');
+		downloadAnchorNode.setAttribute("href", dataStr);
+		downloadAnchorNode.setAttribute("download", "apiData.json");
+		document.body.appendChild(downloadAnchorNode);
+		downloadAnchorNode.click();
+		downloadAnchorNode.remove();
+	}
+
+	fetchData();
+
+
+
+</script>
+</body>
+</html>
