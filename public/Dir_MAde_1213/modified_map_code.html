@@ -83,12 +83,11 @@
             });
 
             for (const zipCode of selectedDistrict.zipCodes) {
-                // Check if still on the same district before fetching houses
                 if (currentDistrict !== districtNumber) {
                     console.log('Switched to a new district. Aborting fetch for the old district.');
                     return;
                 }
-                await throttleFetch(() => fetchHouses(zipCode, districtGeoJson, fetchController.signal));
+                await throttleFetch(() => fetchHouses(zipCode, districtGeoJson, districtNumber));
             }
         } catch (error) {
             console.error('Error during fetch:', error);
@@ -110,7 +109,11 @@
         });
     }
 
-    async function fetchHouses(zipCode, districtGeoJson) {
+    async function fetchHouses(zipCode, districtGeoJson, districtNumber) {
+        if (currentDistrict !== districtNumber) {
+            console.log(`Aborting fetchHouses for District ${districtNumber}.`);
+            return;
+        }
         const apiKey = '206a0782demsh5a1d5a242226a6dp1f6b6cjsnf08b18ac4dfa'; // Replace with your Zillow API key
         const options = {
             method: 'GET',
@@ -132,12 +135,16 @@
                 return turf.booleanPointInPolygon(point, polygon);
             });
 
-            displayHousesOnMap(filteredHouses);
+            displayHousesOnMap(filteredHouses, districtNumber);
         }
     }
 
 
-    function displayHousesOnMap(houses) {
+    function displayHousesOnMap(houses, districtNumber) {
+        if (currentDistrict !== districtNumber) {
+            console.log(`Not displaying houses for District ${districtNumber}.`);
+            return;
+        }
         const redMarker = {
             path: google.maps.SymbolPath.CIRCLE,
             fillColor: 'red',
