@@ -62,29 +62,35 @@
 					<a class="nav-link dropdown-toggle" href="#" id="beds-baths-title" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 						Beds & Baths
 					</a>
-					<div class="dropdown-menu">
+					<div class="dropdown-menu" style="width: 300px;">
 						<div class="px-4 py-3" id="bedroom-options">
 							<!-- Bedroom option buttons (Unchanged) -->
 							<span>Bedrooms:</span>
+							<div class="d-flex flex-wrap">
 							<!-- Bathroom option buttons updated to call filterByBathrooms -->
-							<button class="btn btn-outline-secondary m-1" onclick="filterByBedrooms('any')">Any</button>
-							<button class="btn btn-outline-secondary m-1" onclick="filterByBedrooms(1)">1</button>
-							<button class="btn btn-outline-secondary m-1" onclick="filterByBedrooms(2)">2</button>
-							<button class="btn btn-outline-secondary m-1" onclick="filterByBedrooms(3)">3</button>
-							<button class="btn btn-outline-secondary m-1" onclick="filterByBedrooms(4)">4</button>
-							<button class="btn btn-outline-secondary m-1" onclick="filterByBedrooms(5)">5</button>
+							<button class="btn btn-outline-secondary m-1 btn-sm-1" onclick="filterByBedrooms('any')">Any</button>
+							<button class="btn btn-outline-secondary  btn-sm-1" onclick="filterByBedrooms(1)">1</button>
+							<button class="btn btn-outline-secondary  btn-sm-1" onclick="filterByBedrooms(2)">2</button>
+							<button class="btn btn-outline-secondary  btn-sm-1" onclick="filterByBedrooms(3)">3</button>
+							<button class="btn btn-outline-secondary  btn-sm-1" onclick="filterByBedrooms(4)">4</button>
+							<button class="btn btn-outline-secondary  btn-sm-1" onclick="filterByBedrooms(5)">5</button>
+							</div>
 						</div>
 						<div class="px-4 py-3" id="bathroom-options">
 							<span>Bathrooms:</span>
+							<div class="d-flex flex-wrap">
 							<!-- Bathroom option buttons updated to call filterByBathrooms -->
-							<button class="btn btn-outline-secondary m-1" onclick="filterByBathrooms('any')">Any</button>
-							<button class="btn btn-outline-secondary m-1" onclick="filterByBathrooms(1)">1</button>
-							<button class="btn btn-outline-secondary m-1" onclick="filterByBathrooms(2)">2</button>
-							<button class="btn btn-outline-secondary m-1" onclick="filterByBathrooms(3)">3</button>
-							<button class="btn btn-outline-secondary m-1" onclick="filterByBathrooms(4)">4</button>
-							<button class="btn btn-outline-secondary m-1" onclick="filterByBathrooms(5)">5</button>
+							<button class="btn btn-outline-secondary  btn-sm-1" onclick="filterByBathrooms('any')">Any</button>
+							<button class="btn btn-outline-secondary  btn-sm-1" onclick="filterByBathrooms(1)">1</button>
+							<button class="btn btn-outline-secondary  btn-sm-1" onclick="filterByBathrooms(2)">2</button>
+							<button class="btn btn-outline-secondary  btn-sm-1" onclick="filterByBathrooms(3)">3</button>
+							<button class="btn btn-outline-secondary  btn-sm-1" onclick="filterByBathrooms(4)">4</button>
+							<button class="btn btn-outline-secondary  btn-sm-1" onclick="filterByBathrooms(5)">5</button>
+							</div>
 						</div>
-						<button type="button" class="btn btn-primary" onclick="applyBedsBaths()">Apply</button>
+						<div class="d-flex justify-content-center p-2">
+							<button type="button" class="btn btn-primary" onclick="applyBedsBaths()">Apply</button>
+						</div>
 					</div>
 				</li>
 			</ul>
