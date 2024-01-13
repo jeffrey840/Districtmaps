@@ -166,37 +166,13 @@
 	let filteredData = [];
 	let currentPage = 1;
 	const cardsPerPage = 10; // Adjust this number to ensure an even number of cards
-
-	// Function to create cards dynamically
-	function createCards(cardsData) {
-		console.log("Displaying cards for page " + currentPage);
-		console.log("Data passed to createCards: ", cardsData);
-		const container = document.getElementById('card-container');
-		container.innerHTML = ''; // Clear existing content
-
-		// Calculate the start and end index for slicing the cardsData array
-		const startIndex = (currentPage - 1) * cardsPerPage;
-		const endIndex = startIndex + cardsPerPage;
-		const paginatedItems = cardsData.slice(startIndex, endIndex);
-		console.log("Cards on this page:", paginatedItems);
-
-		paginatedItems.forEach(card => {
-			// Create and append card elements as before
-			const cardElement = document.createElement('div');
-			cardElement.className = 'card';
-			cardElement.style = "width: 100%; margin-bottom: 10px;";
-			cardElement.innerHTML = `
-            <div class="photo" style="height: 120px; background-position: center; background-repeat: no-repeat; background-size: cover; display: flex; justify-content: space-between; background-image: url('${card.imgSrc}');">
-            </div>
-            <div class="description" style="padding: 8px;">
-                <div class="price" style="font-size: 1.2em; font-weight: bolder;">${card.price}</div>
-                <div class="info" style="font-size: 0.75em;">${card.bedrooms} bds ${card.bathrooms} ba ${card.livingArea} sqft</div>
-                <div class="address" style="font-size: 0.75em;">${card.address}</div>
-            </div>
-        `;
-			container.appendChild(cardElement);
-		});
-	}
+	let filterCriteria = {
+		minPrice: 0,
+		maxPrice: Infinity,
+		bedrooms: 'any',
+		bathrooms: 'any',
+		homeType: new Set() // You can populate this based on your checkbox values
+	};
 
 	// Function to fetch JSON data and extract specified fields from each item in 'props'
 	async function fetchAndExtractData() {
@@ -208,44 +184,60 @@
 			const data = await response.json();
 			const extractedData = data.props.map(({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType }) =>
 				({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType }));
-			filteredData = extractedData; // Full dataset
-			currentDisplayData = extractedData; // Set initial display data
-			createCards(currentDisplayData); // Display initial data
+
+			filteredData = extractedData;
+			currentDisplayData = extractedData;
+			filterCriteria.homeType = new Set(); // Initialize with all types selected or based on your logic
+			createCards(currentDisplayData);
 			console.log("Data fetched: ", extractedData);
 		} catch (error) {
 			console.error('Error fetching data: ', error);
 		}
 	}
+	document.addEventListener('DOMContentLoaded', fetchAndExtractData);
+	// Function to create cards dynamically
+
+	function applyFilters() {
+		console.log("Applying filters with criteria: ", filterCriteria);
+
+		let currentFilteredData = filteredData.filter(listing => {
+			const price = typeof listing.price === 'string' ? parseInt(listing.price.replace(/[^0-9.-]+/g, "")) : listing.price;
+			const meetsPrice = price >= filterCriteria.minPrice && price <= filterCriteria.maxPrice;
+			const meetsBedrooms = filterCriteria.bedrooms === 'any' || listing.bedrooms === filterCriteria.bedrooms;
+			const meetsBathrooms = filterCriteria.bathrooms === 'any' || listing.bathrooms === filterCriteria.bathrooms;
+			const meetsHomeType = filterCriteria.homeType.size === 0 || filterCriteria.homeType.has(listing.propertyType);
+			return meetsPrice && meetsBedrooms && meetsBathrooms && meetsHomeType;
+		});
+		console.log("Filtered data after applying all filters: ", currentFilteredData);
+
+		currentDisplayData = currentFilteredData;
+		currentPage = 1;
+		createCards(currentDisplayData);
+	}
 
 	function filterByBathrooms(bathCount) {
 		// Check if 'any' is selected, then don't filter by bathrooms
 		const filtered = bathCount === 'any' ? filteredData : filteredData.filter(card => card.bathrooms === bathCount);
-		createCards(filtered);
+		currentDisplayData = filtered;
+		currentPage = 1; // Reset to first page
+		createCards(currentDisplayData);
 	}
-	function filterByBedrooms(bedrooms) {
-		// Check if 'any' is selected, then don't filter by bathrooms
-		const filtered = bedrooms === 'any' ? filteredData : filteredData.filter(card => card.bedrooms === bedrooms);
-		createCards(filtered);
+	function filterByBedrooms(bedCount) {
+		const filtered = bedCount === 'any' ? filteredData : filteredData.filter(card => card.bedrooms === bedCount);
+		currentDisplayData = filtered;
+		currentPage = 1; // Reset to first page
+		createCards(currentDisplayData);
 	}
 	// Call the fetchAndExtractData function when the DOM content is loaded
-	document.addEventListener('DOMContentLoaded', fetchAndExtractData);
-
 	function applyBedsBaths() {
-		// Retrieve selected bedroom and bathroom values
-		// This needs to be adapted based on your actual UI elements
-		const selectedBedrooms = document.getElementById('bedroom-selector').value; // Replace with your actual element ID
-		const selectedBathrooms = document.getElementById('bathroom-selector').value; // Replace with your actual element ID
+		const selectedBedrooms = document.getElementById('bedroom-selector').value;
+		const selectedBathrooms = document.getElementById('bathroom-selector').value;
 
-		// Filter the listings
-		const filteredListings = filteredData.filter(listing => {
-			return (selectedBedrooms === 'any' || listing.bedrooms === parseInt(selectedBedrooms)) &&
-				(selectedBathrooms === 'any' || listing.bathrooms === parseInt(selectedBathrooms));
-		});
+		filterCriteria.bedrooms = selectedBedrooms === 'any' ? 'any' : parseInt(selectedBedrooms);
+		filterCriteria.bathrooms = selectedBathrooms === 'any' ? 'any' : parseInt(selectedBathrooms);
 
-		// Update the display with filtered listings
-		createCards(filteredListings);
+		applyFilters();
 	}
-
 	function applyPriceRange() {
 		const minPrice = parseInt($('#min-price').val()) || 0;
 		const maxPrice = parseInt($('#max-price').val()) || Infinity;
@@ -265,7 +257,6 @@
 		createCards(currentDisplayData); // Call createCards with updated data
 	}
 
-
 	function updateHomeType() {
 		// Gather selected home types
 		const selectedTypes = $('input[name="home-type"]:checked').map(function() {
@@ -278,7 +269,6 @@
 		// Update the card display
 		createCards(filteredListings);
 	}
-
 	function applyHomeType() {
 		const selectedTypes = [];
 		$('input[name="home-type"]:checked').each(function() {
@@ -311,7 +301,35 @@
 		}
 	}
 
+	function createCards(cardsData) {
+		console.log("Displaying cards for page " + currentPage);
+		console.log("Data passed to createCards: ", cardsData);
+		const container = document.getElementById('card-container');
+		container.innerHTML = ''; // Clear existing content
 
+		// Calculate the start and end index for slicing the cardsData array
+		const startIndex = (currentPage - 1) * cardsPerPage;
+		const endIndex = startIndex + cardsPerPage;
+		const paginatedItems = cardsData.slice(startIndex, endIndex);
+		console.log("Cards on this page:", paginatedItems);
+
+		paginatedItems.forEach(card => {
+			// Create and append card elements as before
+			const cardElement = document.createElement('div');
+			cardElement.className = 'card';
+			cardElement.style = "width: 100%; margin-bottom: 10px;";
+			cardElement.innerHTML = `
+            <div class="photo" style="height: 120px; background-position: center; background-repeat: no-repeat; background-size: cover; display: flex; justify-content: space-between; background-image: url('${card.imgSrc}');">
+            </div>
+            <div class="description" style="padding: 8px;">
+                <div class="price" style="font-size: 1.2em; font-weight: bolder;">${card.price}</div>
+                <div class="info" style="font-size: 0.75em;">${card.bedrooms} bds ${card.bathrooms} ba ${card.livingArea} sqft</div>
+                <div class="address" style="font-size: 0.75em;">${card.address}</div>
+            </div>
+        `;
+			container.appendChild(cardElement);
+		});
+	}
 
 	// Function to initialize Google Map
 	function initMap() {
