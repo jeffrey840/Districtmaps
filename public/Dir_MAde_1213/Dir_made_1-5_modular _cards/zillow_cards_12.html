@@ -109,12 +109,12 @@
 							</div>
 							<div>
 								<label class="form-check">
-									<input type="checkbox" class="form-check-input" name="home-type" value="House" onclick="updateHomeType()"> House
+									<input type="checkbox" class="form-check-input" name="home-type" value="SINGLE_FAMILY" onclick="updateHomeType()" checked> House
 								</label>
 								<label class="form-check">
-									<input type="checkbox" class="form-check-input" name="home-type" value="town-home" onclick="updateHomeType()"> Town Home
+									<input type="checkbox" class="form-check-input" name="home-type" value="TOWNHOUSE" onclick="updateHomeType()" checked> Town Home
 								</label>
-								<!-- Additional checkboxes for other home types -->
+								<!-- Additional checkboxes for other home types, all checked -->
 							</div>
 							<button type="button" class="btn btn-primary" onclick="applyHomeType()">Apply</button>
 						</form>
@@ -190,8 +190,8 @@
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
 			const data = await response.json();
-			const extractedData = data.props.map(({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow }) =>
-				({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow }));
+			const extractedData = data.props.map(({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType }) =>
+				({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType }));
 			filteredData = extractedData; // Save the data for filtering
 			createCards(extractedData); // Call createCards to display the data
 		} catch (error) {
@@ -245,9 +245,43 @@
 	}
 
 
+	function updateHomeType() {
+		// Gather selected home types
+		const selectedTypes = $('input[name="home-type"]:checked').map(function() {
+			return this.value;
+		}).get();
+
+		// Filter listings based on selected home types
+		const filteredListings = filteredData.filter(listing => selectedTypes.includes(listing.propertyType));
+
+		// Update the card display
+		createCards(filteredListings);
+	}
+
+	function applyHomeType() {
+		const selectedTypes = [];
+		$('input[name="home-type"]:checked').each(function() {
+			selectedTypes.push($(this).val());
+		});
+
+		console.log("Selected Types: ", selectedTypes);
+
+		const filteredListings = filteredData.filter(listing => {
+			// Check if listing has a propertyType and if it's included in the selected types
+			// If no propertyType, decide whether to include or exclude such listings
+			return !listing.propertyType || selectedTypes.includes(listing.propertyType);
+		});
+
+		console.log("Filtered Listings: ", filteredListings);
+		createCards(filteredListings);
+	}
+
+
+
+
 	// Function to initialize Google Map
 	function initMap() {
-		var map = new google.maps.Map(document.getElementById('map-container'), {
+		const map = new google.maps.Map(document.getElementById('map-container'), {
 			center: {lat: 29.760799, lng: -95.369507},
 			zoom: 12
 		});
