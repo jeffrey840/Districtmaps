@@ -133,6 +133,10 @@
 				<div style="display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 10px;" id="card-container" >
 					<!-- Cards will be dynamically loaded here -->
 				</div>
+				<div>
+					<button onclick="previousPage()">Previous</button>
+					<button onclick="nextPage()">Next</button>
+				</div>
 			</div>
 		</div>
 
@@ -159,25 +163,33 @@
 	});
 
 	let filteredData = [];
+	let currentPage = 1;
+	const cardsPerPage = 10; // Adjust this number to ensure an even number of cards
+
 	// Function to create cards dynamically
 	function createCards(cardsData) {
 		const container = document.getElementById('card-container');
 		container.innerHTML = ''; // Clear existing content
 
-		cardsData.forEach(card => {
-			// Assuming 'card' contains fields such as price, bedrooms, etc.
+		// Calculate the start and end index for slicing the cardsData array
+		const startIndex = (currentPage - 1) * cardsPerPage;
+		const endIndex = startIndex + cardsPerPage;
+		const paginatedItems = cardsData.slice(startIndex, endIndex);
+
+		paginatedItems.forEach(card => {
+			// Create and append card elements as before
 			const cardElement = document.createElement('div');
 			cardElement.className = 'card';
 			cardElement.style = "width: 100%; margin-bottom: 10px;";
 			cardElement.innerHTML = `
-                <div class="photo" style="height: 120px; background-position: center; background-repeat: no-repeat; background-size: cover; display: flex; justify-content: space-between; background-image: url('${card.imgSrc}');">
-                </div>
-                <div class="description" style="padding: 8px;">
-                    <div class="price" style="font-size: 1.2em; font-weight: bolder;">${card.price}</div>
-                    <div class="info" style="font-size: 0.75em;">${card.bedrooms} bds ${card.bathrooms} ba ${card.livingArea} sqft</div>
-                    <div class="address" style="font-size: 0.75em;">${card.address}</div>
-                </div>
-            `;
+            <div class="photo" style="height: 120px; background-position: center; background-repeat: no-repeat; background-size: cover; display: flex; justify-content: space-between; background-image: url('${card.imgSrc}');">
+            </div>
+            <div class="description" style="padding: 8px;">
+                <div class="price" style="font-size: 1.2em; font-weight: bolder;">${card.price}</div>
+                <div class="info" style="font-size: 0.75em;">${card.bedrooms} bds ${card.bathrooms} ba ${card.livingArea} sqft</div>
+                <div class="address" style="font-size: 0.75em;">${card.address}</div>
+            </div>
+        `;
 			container.appendChild(cardElement);
 		});
 	}
@@ -276,6 +288,17 @@
 		createCards(filteredListings);
 	}
 
+	function nextPage() {
+		currentPage++;
+		createCards(filteredData);
+	}
+
+	function previousPage() {
+		if (currentPage > 1) {
+			currentPage--;
+			createCards(filteredData);
+		}
+	}
 
 
 
