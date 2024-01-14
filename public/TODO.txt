@@ -300,16 +300,6 @@ another dropdown within, "dropdown tltled, more"
 
 
 
-To adjust GeoJSON boundaries to accurately represent school district areas that may not align with the given zip code boundaries, you have a few options:
-
-Here's a user story to describe how a user would interact with your application:
-
-- **Title:** View Real Estate Listings by School District
-
-- **As a** parent looking for a new home,
-- **I want** to view all current real estate listings within the boundaries of a specific school district,
-- **So that** I can ensure my new home provides access to desired educational opportunities for my children.
-
 #### Acceptance Criteria:
 
 1. **Viewing Listings:**
@@ -337,3 +327,18 @@ Here's a user story to describe how a user would interact with your application:
    - When I decide I want more information,
    - Then I should be able to contact the real estate agent directly from the listing details page.
    activity flash
+
+
+   todo:01-14-24: working filters
+   todo:
+   todo:
+   todo:
+
+   todo: when applyBedsBaths function  filter just show the values being passed and filtered
+
+   todo: when clicking beds and baths show the selected values that are being displayed, like show the button blue, intially it will be as any value
+
+   todo:after clicking the beds or bath dropdown values do not automatically close out the dropdown after a value is being passed, if the user clicks anywhere other than the apply then the filter will pass teh applyBedsBaths function button automatically, teh cards will still dinamically be displayed to the user,
+
+    todo: when displaying eth filtered cards you will show show the bathromms or bedrooms equal to or above the selected values
+
