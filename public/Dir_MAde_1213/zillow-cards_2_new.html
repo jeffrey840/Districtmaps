@@ -202,38 +202,25 @@
 	document.addEventListener('DOMContentLoaded', fetchAndExtractData);
 	// Function to create cards dynamically
 
-	// function applyFilters() {
-	// 	console.log("Applying filters with criteria: ", filterCriteria);
-	//
-	// 	let currentFilteredData = filteredData.filter(listing => {
-	// 		const price = typeof listing.price === 'string' ? parseInt(listing.price.replace(/[^0-9.-]+/g, "")) : listing.price;
-	// 		const meetsPrice = price >= filterCriteria.minPrice && price <= filterCriteria.maxPrice;
-	// 		const meetsBedrooms = filterCriteria.bedrooms === 'any' || listing.bedrooms === filterCriteria.bedrooms;
-	// 		const meetsBathrooms = filterCriteria.bathrooms === 'any' || listing.bathrooms === filterCriteria.bathrooms;
-	// 		const meetsHomeType = filterCriteria.homeType.size === 0 || filterCriteria.homeType.has(listing.propertyType);
-	// 		return meetsPrice && meetsBedrooms && meetsBathrooms && meetsHomeType;
-	// 	});
-	// 	console.log("Combined filters applied. Number of items after filtering:", currentFilteredData.length);
-	//
-	// 	currentDisplayData = currentFilteredData;
-	// 	currentPage = 1;
-	// 	createCards(currentDisplayData);
-	// }
+	function applyFilters() {
+		console.log("Applying filters with criteria: ", filterCriteria);
 
-	function applyAllFilters() {
 		let currentFilteredData = filteredData.filter(listing => {
 			const price = typeof listing.price === 'string' ? parseInt(listing.price.replace(/[^0-9.-]+/g, "")) : listing.price;
 			const meetsPrice = price >= filterCriteria.minPrice && price <= filterCriteria.maxPrice;
-			const meetsBedrooms = listing.bedrooms >= filterCriteria.bedrooms;
+			const meetsBedrooms = filterCriteria.bedrooms === 'any' || listing.bedrooms === filterCriteria.bedrooms;
 			const meetsBathrooms = filterCriteria.bathrooms === 'any' || listing.bathrooms === filterCriteria.bathrooms;
-			return meetsPrice && meetsBedrooms && meetsBathrooms;
+			const meetsHomeType = filterCriteria.homeType.size === 0 || filterCriteria.homeType.has(listing.propertyType);
+			return meetsPrice && meetsBedrooms && meetsBathrooms && meetsHomeType;
 		});
+		console.log("Combined filters applied. Number of items after filtering:", currentFilteredData.length);
 
 		currentDisplayData = currentFilteredData;
 		currentPage = 1;
 		createCards(currentDisplayData);
-		console.log("All filters applied. Number of items after filtering:", currentFilteredData.length);
 	}
+
+
 
 	function filterByBathrooms(bathCount) {
 		console.log(`Applying filter by bathrooms: ${bathCount}`);
