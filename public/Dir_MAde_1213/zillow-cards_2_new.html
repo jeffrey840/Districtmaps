@@ -247,22 +247,18 @@
 		console.log("Applying price range filter.");
 		const minPrice = parseInt($('#min-price').val()) || 0;
 		const maxPrice = parseInt($('#max-price').val()) || Infinity;
+
+		// Update filter criteria for price
+		filterCriteria.minPrice = minPrice;
+		filterCriteria.maxPrice = maxPrice;
+
 		console.log("Selected Min Price: ", minPrice);
 		console.log("Selected Max Price: ", maxPrice);
 
-		const filteredListings = filteredData.filter(listing => {
-			let listingPrice = listing.price;
-			if (typeof listingPrice === 'string') {
-				listingPrice = parseInt(listingPrice.replace(/[^0-9.-]+/g, ""));
-			}
-			return listingPrice >= minPrice && listingPrice <= maxPrice;
-		});
-
-		currentDisplayData = filteredListings; // Update currentDisplayData
-		currentPage = 1; // Reset to first page
-		createCards(currentDisplayData); // Call createCards with updated data
-		console.log("Price range filter applied. Current filter criteria:", filterCriteria);
+		// Apply all filters together
+		applyFilters();
 	}
+
 
 	function updateHomeType() {
 		console.log("Updating home type filter.");

@@ -335,8 +335,6 @@ another dropdown within, "dropdown tltled, more"
 
    todo:01-14-24:  filters
    todo:beds and bath filter only shows specific quantity
-   todo:beds and bath filter dont apply on top of one another, when another filter is applied (bed and baths) it is fetched form eth original data
-   todo:
 
 filter bedrooms 4 = 18
 filter bedrooms 5 = 9
@@ -347,13 +345,19 @@ filter bathrooms 4 = 2
 filter bathrooms 5 = 2
 filter bathrooms 2 = 12
 
+bedrooms 4 && bathrooms 3 = 10 total
+500 k to 600 k = 3
+4 - 5 = 4
+3 - 4 = 2
+
+
 for bedrooms 5 there are only there are 2 listings 300k - 400k
 
-   todo: when applyBedsBaths function  filter just show the values being passed and filtered
+    todo: when applyBedsBaths function  filter just show the values being passed and filtered
 
-   todo: when clicking beds and baths show the selected values that are being displayed, like show the button blue, initially it will be as any value
+    todo: when clicking beds and baths show the selected values that are being displayed, like show the button blue, initially it will be as any value
 
-   todo:after clicking the beds or bath dropdown values do not automatically close out the dropdown after a value is being passed, if the user clicks anywhere other than the apply then the filter will pass teh applyBedsBaths function button automatically, teh cards will still dynamically be displayed to the user,
+    todo:after clicking the beds or bath dropdown values do not automatically close out the dropdown after a value is being passed, if the user clicks anywhere other than the apply then the filter will pass teh applyBedsBaths function button automatically, teh cards will still dynamically be displayed to the user,
 
-    todo: when displaying eth filtered cards you will show show the bathromms or bedrooms equal to or above the selected values
+    todo: when displaying eth filtered cards you will show the bathrooms or bedrooms equal to or above the selected values
 

@@ -9,34 +9,7 @@
 
 <script>
 
-	// function applyFilters() {
-	// 	console.log("Applying filters with criteria: ", filterCriteria);
-	//
-	// 	let currentFilteredData = filteredData.filter(listing => {
-	// 		const price = typeof listing.price === 'string' ? parseInt(listing.price.replace(/[^0-9.-]+/g, "")) : listing.price;
-	// 		const meetsPrice = price >= filterCriteria.minPrice && price <= filterCriteria.maxPrice;
-	// 		const meetsBedrooms = filterCriteria.bedrooms === 'any' || listing.bedrooms === parseInt(filterCriteria.bedrooms);
-	// 		const meetsBathrooms = filterCriteria.bathrooms === 'any' || listing.bathrooms === parseInt(filterCriteria.bathrooms);
-	// 		const meetsHomeType = filterCriteria.homeType.size === 0 || filterCriteria.homeType.has(listing.propertyType);
-	// 		return meetsPrice && meetsBedrooms && meetsBathrooms && meetsHomeType;
-	// 	});
-	//
-	// 	currentDisplayData = currentFilteredData;
-	// 	currentPage = 1;
-	// 	createCards(currentDisplayData);
-	// }
 
-	function filterByBathrooms(bathCount) {
-		console.log(`Filter criteria updated by bathrooms: ${bathCount}`);
-		filterCriteria.bathrooms = bathCount; // Update filter criteria
-		applyFilters(); // Apply combined filters
-	}
-
-	function filterByBedrooms(bedCount) {
-		console.log(`Filter criteria updated by bedrooms: ${bedCount}`);
-		filterCriteria.bedrooms = bedCount; // Update filter criteria
-		applyFilters(); // Apply combined filters
-	}
 
 
 </script>
