@@ -28,7 +28,10 @@
 				</li>
 			</ul>
 			<form class="d-flex">
-				<input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+				<input type="text" placeholder="City, Neighborhood, ZIP, Address" aria-autocomplete="list" autocomplete="on"  aria-expanded="false" onfocus="showLocationOptions()" onblur="hideLocationOptions()">
+				<div id="location-options" class="position-absolute start-3 pt-4 d-none">
+					<small><a href="#" onclick="useCurrentLocation()">Use Current Location</a></small>
+				</div>
 				<button class="btn btn-outline-success" type="submit">Search</button>
 			</form>
 
@@ -183,6 +186,20 @@
 
 <script>
 
+	function showLocationOptions() {
+		document.getElementById('location-options').classList.remove('d-none');
+		console.log('Search box focused');
+	}
+
+	function hideLocationOptions() {
+		document.getElementById('location-options').classList.add('d-none');
+		console.log('Search box blurred');
+	}
+
+	function useCurrentLocation() {
+		console.log('User selected to use current location');
+		// Implement your logic for using the current location here
+	}
 	$(document).ready(function(){
 		const maxPriceSelect = $('#max-price');
 		for (let i = 50000; i <= 1000000; i += 50000) {
