@@ -42,10 +42,10 @@
 			<!-- district Dropdown -->
 			<ul class="navbar-nav">
 				<li class="nav-item dropdown">
-					<button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-						Dropdown
-					</button>
-					<ul class="dropdown-menu dropdown-menu-dark">
+					<a class="nav-link dropdown-toggle" href="#" id="" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						Districts
+					</a>
+					<ul class="dropdown-menu" id="districtDropdown">
 						<li><a class="dropdown-item" href="#">district 1</a></li>
 						<li><a class="dropdown-item" href="#">district 2</a></li>
 						<li><a class="dropdown-item" href="#">district 3</a></li>
@@ -54,6 +54,9 @@
 						<li><a class="dropdown-item" href="#">district 6</a></li>
 						<li><a class="dropdown-item" href="#">district 7</a></li>
 					</ul>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="districtTitle">district 1</a>
 				</li>
 			</ul>
 
@@ -181,15 +184,17 @@
 <script>
 
 	$(document).ready(function(){
+		const maxPriceSelect = $('#max-price');
+		for (let i = 50000; i <= 1000000; i += 50000) {
+			maxPriceSelect.append($('<option>', { value: i, text: `$${i.toLocaleString()}` }));
+		}
 		$('#toggle-button').click(function(){
 			$(this).toggleClass('active');
 		});
 	});
-
-	$(document).ready(function() {
-		const maxPriceSelect = $('#max-price');
-		for (let i = 50000; i <= 1000000; i += 50000) {
-			maxPriceSelect.append($('<option>', { value: i, text: `$${i.toLocaleString()}` }));
+	document.getElementById('districtDropdown').addEventListener('click', function (event) {
+		if (event.target.classList.contains('dropdown-item')) {
+			document.getElementById('districtTitle').innerText = event.target.innerText;
 		}
 	});
 
