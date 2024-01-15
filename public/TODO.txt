@@ -353,9 +353,8 @@ bedrooms 4 && bathrooms 3 = 10 total
 
 for bedrooms 5 there are only there are 2 listings 300k - 400k
 
-    todo: when applyBedsBaths function  filter just show the values being passed and filtered
 
-    todo: when clicking beds and baths show the selected values that are being displayed, like show the button blue, initially it will be as any value
+    todo: when clicking beds and baths show the selected values that are being displayed, like show the button blue, initially it will be as any value,make sure to log what is happening
 
     todo:after clicking the beds or bath dropdown values do not automatically close out the dropdown after a value is being passed, if the user clicks anywhere other than the apply then the filter will pass teh applyBedsBaths function button automatically, teh cards will still dynamically be displayed to the user,
 

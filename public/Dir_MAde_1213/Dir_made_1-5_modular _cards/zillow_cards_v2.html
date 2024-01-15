@@ -32,6 +32,12 @@
 				<button class="btn btn-outline-success" type="submit">Search</button>
 			</form>
 
+			<ul class="nav nav-pills">
+				<li class="nav-item">
+					<a class="nav-link active" id="toggle-button" href="#">Reset</a>
+				</li>
+			</ul>
+
 			<!-- Price Range Dropdown -->
 			<ul class="navbar-nav">
 				<li class="nav-item dropdown">
@@ -154,6 +160,12 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
+
+	$(document).ready(function(){
+		$('#toggle-button').click(function(){
+			$(this).toggleClass('active');
+		});
+	});
 
 	$(document).ready(function() {
 		const maxPriceSelect = $('#max-price');
