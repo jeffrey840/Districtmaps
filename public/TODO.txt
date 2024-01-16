@@ -353,6 +353,9 @@ bedrooms 4 && bathrooms 3 = 10 total
 
 for bedrooms 5 there are only there are 2 listings 300k - 400k
 
+https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/district_1_combined_zillow_listings.json
+
+https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/district_2_combined_zillow_listings.json
 
     todo: when clicking beds and baths show the selected values that are being displayed, like show the button blue, initially it will be as any value,make sure to log what is happening
 
