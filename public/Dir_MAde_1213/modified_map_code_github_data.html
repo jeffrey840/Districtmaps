@@ -93,9 +93,7 @@
       console.log(`Aborting fetchHouses for District ${districtNumber}.`);
       return;
     }
-
-    // URL for the GitHub JSON data
-    const url = `https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/district_${districtNumber}_combined_zillow_listings.json`;
+    const url = `https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/combined_${districtNumber}_zillow_listings.json`;
 
     // Fetch the district's GeoJSON to use for filtering
     const districtGeoJson = await fetchGeoJson(districts[districtNumber - 1].geoJsonUrl);
@@ -105,15 +103,29 @@
       const listings = await response.json();
 
       if (listings && listings.length > 0) {
-        // Filter listings based on whether they fall within the district's GeoJSON boundaries
-        const filteredListings = listings.filter(listing => {
-          if (!listing.latitude || !listing.longitude) return false;
+        const insideListings = [];
+        const outsideListings = [];
+
+        // Filter listings and categorize them as inside or outside the GeoJSON boundaries
+        listings.forEach(listing => {
+          if (!listing.latitude || !listing.longitude) {
+            outsideListings.push(listing);
+            return;
+          }
           const point = turf.point([listing.longitude, listing.latitude]);
           const polygon = districtGeoJson.features[0].geometry;
-          return turf.booleanPointInPolygon(point, polygon);
+          if (turf.booleanPointInPolygon(point, polygon)) {
+            insideListings.push(listing);
+          } else {
+            outsideListings.push(listing);
+          }
         });
 
-        displayHousesOnMap(filteredListings, districtNumber);
+        // Log the filtered listings
+        console.log(`Listings inside District ${districtNumber}:`, insideListings);
+        console.log(`Listings outside District ${districtNumber}:`, outsideListings);
+
+        displayHousesOnMap(insideListings, districtNumber);
       }
     } catch (error) {
       console.error('Error fetching houses:', error);
