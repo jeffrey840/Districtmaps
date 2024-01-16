@@ -161,7 +161,8 @@
 			maxPriceSelect.append($('<option>', { value: i, text: `$${i.toLocaleString()}` }));
 		}
 	});
-
+	let map;
+	let redMarker;
 	let currentDisplayData = [];
 	let filteredData = [];
 	let currentPage = 1;
@@ -185,8 +186,8 @@
 			console.log("Data successfully fetched from the JSON source.");
 			const data = await response.json();
 			console.log("Processing data to extract needed fields.");
-			const extractedData = data.props.map(({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType }) =>
-				({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType }));
+			const extractedData = data.props.map(({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType,longitude,latitude }) =>
+				({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType, longitude, latitude }));
 
 			console.log("Data processed and extracted.");
 			filteredData = extractedData;
@@ -312,6 +313,24 @@
 		console.log("Previous page displayed: Page", currentPage);
 	}
 
+	function updateMapMarkers(items) {
+		// Clear existing markers
+		markers.forEach(marker => marker.setMap(null));
+		markers = [];
+
+		// Add new markers
+		items.forEach(item => {
+			if (item.latitude && item.longitude) {
+				const marker = new google.maps.Marker({
+					position: { lat: parseFloat(item.latitude), lng: parseFloat(item.longitude) },
+					map: map,
+					icon: redMarker
+				});
+				markers.push(marker);
+			}
+		});
+	}
+
 	function createCards(cardsData) {
 		console.log("Displaying cards for page " + currentPage);
 		console.log("Data passed to createCards: ", cardsData);
@@ -342,15 +361,26 @@
 			container.appendChild(cardElement);
 		});
 		console.log("Cards created and displayed for current page.");
+		updateMapMarkers(paginatedItems);
 	}
 
-	// Function to initialize Google Map
+	let markers = [];
 	function initMap() {
 		console.log("Initializing Google Map.");
-		const map = new google.maps.Map(document.getElementById('map-container'), {
-			center: {lat: 29.760799, lng: -95.369507},
+		map = new google.maps.Map(document.getElementById('map-container'), {
+			center: { lat: 29.760799, lng: -95.369507 },
 			zoom: 12
 		});
+
+		redMarker = {
+			path: google.maps.SymbolPath.CIRCLE,
+			fillColor: 'red',
+			fillOpacity: 1,
+			scale: 5,
+			strokeColor: 'red',
+			strokeWeight: 1
+		};
+
 		console.log("Google Map initialized.");
 	}
 </script>

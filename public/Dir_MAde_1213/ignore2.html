@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+</head>
+<body>
+
+<script src="https://
+
+maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+```
+
+2. Define the `redMarker` style within the `initMap` function or after it:
+<script>
+let redMarker;
+
+function initMap() {
+console.log("Initializing Google Map.");
+map = new google.maps.Map(document.getElementById('map-container'), {
+center: {lat: 29.760799, lng: -95.369507},
+zoom: 12
+});
+
+// Define the redMarker style here
+redMarker = {
+path: google.maps.SymbolPath.CIRCLE,
+fillColor: 'red',
+fillOpacity: 1,
+scale: 5,
+strokeColor: 'red',
+strokeWeight: 1
+};
+
+console.log("Google Map initialized.");
+}
+
+</script>
+</body>
+</html>
