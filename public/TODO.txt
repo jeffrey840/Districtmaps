@@ -357,6 +357,10 @@ https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/district_1_combined_
 
 https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/district_2_combined_zillow_listings.json
 
+now toggling with github data,
+zil_cards_new_2 has working filters,
+zil_cards_v2 had more nav features
+
     todo: when clicking beds and baths show the selected values that are being displayed, like show the button blue, initially it will be as any value,make sure to log what is happening
 
     todo:after clicking the beds or bath dropdown values do not automatically close out the dropdown after a value is being passed, if the user clicks anywhere other than the apply then the filter will pass teh applyBedsBaths function button automatically, teh cards will still dynamically be displayed to the user,
