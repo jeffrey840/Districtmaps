@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Display Listings in Multiple Districts with GeoJSON Overlay</title>
+    <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initialize" async defer></script>
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+        #districtSelector {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: white;
+            padding: 5px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="districtSelector">
+    <label for="districts">Select District:</label>
+    <select id="districts" onchange="loadDistrictData(this.value)">
+        <option value="1">District 1</option>
+        <option value="2">District 2</option>
+        <!-- Other district options -->
+    </select>
+</div>
+<script>
+    let map;
+    let markers = []; // Array to hold map markers
+    let fetchController;
+    let lastFetchTime = 0;
+    let currentDistrict = '';
+    const districts = [
+        {
+            name: "District 1",
+            zipCodes: ["77091", "77096", "77093", "77022", "77018", "77092", "77055", "77008", "77009", "77007", "77024", "77057", "77056", "77027", "77081"],
+            geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_1.geojson"
+        },
+        {
+            name: "District 2",
+            zipCodes: ["77088", "77037", "77016", "77050", "77091", "77076", "77093", "77078", "77028", "77026", "77022", "77018", "77092", "77009", "77026", "77020", "77013", "77029"],
+            geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_2.geojson"
+        }
+    ];
+
+    function initialize() {
+        console.log('Initializing map...');
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 12,
+            center: { lat: 29.842912, lng: -95.323 } // Initial center
+        });
+        loadDistrictData('1'); // Load District 1 data initially
+    }
+
+    async function loadDistrictData(districtNumber) {
+        console.log(`Loading data for District ${districtNumber}`);
+        currentDistrict = districtNumber; // Set the current district
+        if (fetchController) fetchController.abort(); // Abort any ongoing fetch requests
+        fetchController = new AbortController(); // Create a new controller for the new request
+
+        clearMarkers(); // Clear existing markers before loading new data
+        map.data.forEach(feature => map.data.remove(feature)); // Clear existing GeoJSON overlays
+
+        const selectedDistrict = districts.find(d => d.name === `District ${districtNumber}`);
+        if (!selectedDistrict) {
+            console.log(`District ${districtNumber} not found.`);
+            return;
+        }
+
+        try {
+            const districtGeoJson = await fetchGeoJson(selectedDistrict.geoJsonUrl, fetchController.signal);
+            map.data.addGeoJson(districtGeoJson);
+            map.data.setStyle({
+                fillColor: 'blue',
+                strokeWeight: 1
+            });
+
+            for (const zipCode of selectedDistrict.zipCodes) {
+                if (currentDistrict !== districtNumber) {
+                    console.log('Switched to a new district. Aborting fetch for the old district.');
+                    return;
+                }
+                await throttleFetch(() => fetchHouses(zipCode, districtGeoJson, districtNumber));
+            }
+        } catch (error) {
+            console.error('Error during fetch:', error);
+        }
+    }
+    // Other function definitions
+
+
+    function initMap(geoJsonData) {
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 12,
+            center: { lat: 29.842912, lng: -95.323 } // Center on the general area
+        });
+
+        map.data.addGeoJson(geoJsonData);
+        map.data.setStyle({
+            fillColor: 'blue',
+            strokeWeight: 1
+        });
+    }
+
+    async function fetchHouses(zipCode, districtGeoJson, districtNumber) {
+        if (currentDistrict !== districtNumber) {
+            console.log(`Aborting fetchHouses for District ${districtNumber}.`);
+            return;
+        }
+        const apiKey = ''; // Replace with your Zillow API key
+        const options = {
+            method: 'GET',
+            headers: {
+                'X-RapidAPI-Key': apiKey,
+                'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+            }
+        };
+
+        const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}`;
+        const response = await fetch(url, options);
+        const data = await response.json();
+
+        if (data && data.props) {
+            const filteredHouses = data.props.filter(house => {
+                if (!house.latitude || !house.longitude) return false;
+                const point = turf.point([house.longitude, house.latitude]);
+                const polygon = districtGeoJson.features[0].geometry;
+                return turf.booleanPointInPolygon(point, polygon);
+            });
+
+            displayHousesOnMap(filteredHouses, districtNumber);
+        }
+    }
+
+
+    function displayHousesOnMap(houses, districtNumber) {
+        if (currentDistrict !== districtNumber) {
+            console.log(`Not displaying houses for District ${districtNumber}.`);
+            return;
+        }
+        const redMarker = {
+            path: google.maps.SymbolPath.CIRCLE,
+            fillColor: 'red',
+            fillOpacity: 1,
+            scale: 5,
+            strokeColor: 'red',
+            strokeWeight: 1
+        };
+
+        houses.forEach(house => {
+            const marker = new google.maps.Marker({
+                position: { lat: house.latitude, lng: house.longitude },
+                map: map,
+                icon: redMarker
+            });
+            markers.push(marker); // Add marker to the array
+        });
+    }
+
+    function clearMarkers() {
+        console.log('Clearing markers...');
+        // Clear all markers from the map and empty the array
+        markers.forEach(marker => marker.setMap(null));
+        markers = [];
+    }
+
+    async function throttleFetch(fetchFunction) {
+        const now = Date.now();
+        if (lastFetchTime && now - lastFetchTime < 2000) { // 2-second limit
+            await delay(2000 - (now - lastFetchTime)); // Wait for the remaining time
+        }
+        lastFetchTime = Date.now(); // Update the last fetch time
+        await fetchFunction();
+    }
+
+    async function fetchGeoJson(url, signal) {
+        try {
+            const response = await fetch(url, { signal });
+            return await response.json();
+        } catch (error) {
+            console.error("Error fetching GeoJSON data:", error);
+            throw error; // Rethrow to handle in the calling function
+        }
+    }
+
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+
+
+
+
+
+
+
+
+
+
+    // Other function definitions
+</script>
+</body>
+</html>

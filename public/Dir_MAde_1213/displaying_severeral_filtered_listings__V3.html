@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<title>Display Listings in Multiple Districts with GeoJSON Overlay</title>
 	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsuN-9jE_5TiIMb_-PfH8V8j7FkXg0PVQ&callback=initialize" async defer></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=&callback=initialize" async defer></script>
 	<style>
         #map {
             height: 500px;
@@ -132,7 +132,7 @@
 	}
 
 	async function fetchHouses(zipCode, districtGeoJson) {
-		const apiKey = '4b79262d6emsh7cc3f4048fc7718p12b945jsndb86ef3ab993'; // Replace with your Zillow API key
+		const apiKey = ''; // Replace with your Zillow API key
 		const options = {
 			method: 'GET',
 			headers: {
@@ -141,7 +141,7 @@
 			}
 		};
 
-		const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}&home_type=Houses`;
+		const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}`;
 		const response = await fetch(url, options);
 		const data = await response.json();
 

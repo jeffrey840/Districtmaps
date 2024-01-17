@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Zillow API Pagination</title>
+</head>
+<body>
+
+<button id="fetchForSale">Fetch Properties for Sale</button>
+<button id="fetchForRent">Fetch Properties for Rent</button>
+<button id="fetchRecentlySold">Fetch Recently Sold Properties</button>
+<button id="nextPage" disabled>Next Page</button>
+<button id="prevPage" disabled>Previous Page</button>
+<pre id="results"></pre>
+
+<script>
+
+  let currentPage = 1;
+  let currentType = 'ForSale'; // Default type
+
+  document.getElementById('fetchForSale').addEventListener('click', () => {
+    if (currentType !== 'ForSale') {
+      currentType = 'ForSale';
+      currentPage = 1; // Reset to first page
+    }
+    fetchData(currentPage);
+  });
+  document.getElementById('fetchForRent').addEventListener('click', () => {
+    if (currentType !== 'ForRent') {
+      currentType = 'ForRent';
+      currentPage = 1; // Reset to first page
+    }
+    fetchData(currentPage);
+  });
+  document.getElementById('fetchRecentlySold').addEventListener('click', () => {
+    if (currentType !== 'RecentlySold') {
+      currentType = 'RecentlySold';
+      currentPage = 1; // Reset to first page
+    }
+    fetchData(currentPage);
+  });
+  document.getElementById('nextPage').addEventListener('click', () => fetchData(++currentPage));
+  document.getElementById('prevPage').addEventListener('click', () => fetchData(--currentPage));
+
+  async function fetchData(pageNumber) {
+    const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=77080&status_type=${currentType}&page=${pageNumber}`;
+    const options = {
+      method: 'GET',
+      headers: {
+        'X-RapidAPI-Key': '',
+        'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+      }
+    };
+
+    try {
+      const response = await fetch(url, options);
+      const data = await response.json();
+      console.log(data);
+      displayResults(data);
+      handlePaginationButtons(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  function displayResults(data) {
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.textContent = JSON.stringify(data, null, 2);
+  }
+
+  function handlePaginationButtons(data) {
+    document.getElementById('nextPage').disabled = currentPage >= data.totalPages;
+    document.getElementById('prevPage').disabled = currentPage <= 1;
+  }
+
+  fetchData(currentPage); // Load the first page for 'For Sale' on startup
+
+</script>
+</body>
+</html>

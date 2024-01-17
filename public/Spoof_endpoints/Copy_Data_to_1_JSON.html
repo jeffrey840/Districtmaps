@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+</head>
+<body>
+
+
+<script>
+
+  async function fetchAllDataAndCreateJSON(apiEndpoint, apiKey) {
+    let allData = [];
+    let totalPages = 1;
+    const headers = {
+      "X-RapidAPI-Key": '',
+      "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com"
+    };
+
+    // Fetch initial page to get total number of pages
+    try {
+      const initialResponse = await fetch(`${apiEndpoint}&page=1`, { headers });
+      const initialData = await initialResponse.json();
+      totalPages = initialData.totalPages;
+
+      for (let page = 1; page <= totalPages; page++) {
+        const response = await fetch(`${apiEndpoint}&page=${page}`, { headers });
+        const data = await response.json();
+        allData = allData.concat(data.props);
+      }
+
+      const finalData = {
+        props: allData,
+        resultsPerPage: allData.length,
+        totalPages: 1,
+        totalResultCount: allData.length,
+        currentPage: 1
+      };
+
+      saveDataAsJSON(finalData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  function saveDataAsJSON(data) {
+    const dataStr = JSON.stringify(data, null, 4);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "data.json";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }, 0);
+  }
+
+  // Example usage:
+  fetchAllDataAndCreateJSON('https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=77080', 'your_api_key_here');
+
+
+</script>
+
+</body>
+</html>
