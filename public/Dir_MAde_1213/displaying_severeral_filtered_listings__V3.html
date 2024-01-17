@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<title>Display Listings in Multiple Districts with GeoJSON Overlay</title>
 	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADd7NKHfGXY1FLZn4z260m0pwnhFcA1gE&callback=initialize" async defer></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=&callback=initialize" async defer></script>
 	<style>
         #map {
             height: 500px;
@@ -132,7 +132,7 @@
 	}
 
 	async function fetchHouses(zipCode, districtGeoJson) {
-		const apiKey = '206a0782demsh5a1d5a242226a6dp1f6b6cjsnf08b18ac4dfa'; // Replace with your Zillow API key
+		const apiKey = ''; // Replace with your Zillow API key
 		const options = {
 			method: 'GET',
 			headers: {

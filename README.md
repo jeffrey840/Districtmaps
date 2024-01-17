@@ -19,5 +19,3 @@ This application is a comprehensive tool for finding real estate listings within
 - **Integrated APIs**: Utilizes Google Maps for mapping, Turf.js for geospatial analysis, and the Zillow API for real estate data.
 - **Responsive Design**: The user interface is responsive and adaptable to different devices and screen sizes, ensuring a seamless user experience.
 
-
-**Next Task**: FINISHED - Consider adding sections on API keys setup, usage instructions, or contributing guidelines for further development.
