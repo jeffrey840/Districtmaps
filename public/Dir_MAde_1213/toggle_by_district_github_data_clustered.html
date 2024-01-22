@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Display Listings in Multiple Districts with GitHub JSON</title>
+  <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2Z4Lk0QfR6QngDRAQM6k0mzP7NJAu1vs&callback=initialize" async defer></script>
+  <style>
+    #map {
+      height: 500px;
+      width: 100%;
+    }
+    #districtSelector {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: white;
+      padding: 5px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="districtSelector">
+  <label for="districts">Select District:</label>
+  <select id="districts" onchange="loadDistrictData(this.value)">
+    <option value="1">District 1</option>
+    <option value="2">District 2</option>
+    <!-- Other district options -->
+  </select>
+</div>
+<script>
+  let map;
+  let markers = []; // Array to hold map markers
+  let fetchController;
+  let lastFetchTime = 0;
+  let currentDistrict = '';
+  const districts = [
+    {
+      name: "District 1",
+      geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_1.geojson"
+    },
+    {
+      name: "District 2",
+      geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_2.geojson"
+    },
+
+    // Add other districts here if needed
+  ];
+
+  function initialize() {
+    console.log('Initializing map...');
+    map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 12,
+      center: { lat: 29.842912, lng: -95.323 } // Initial map center
+    });
+    loadDistrictData('1'); // Load District 1 data initially
+  }
+
+  async function loadDistrictData(districtNumber) {
+    console.log(`Loading data for District ${districtNumber}`);
+    currentDistrict = districtNumber; // Set the current district
+    if (fetchController) fetchController.abort(); // Abort any ongoing fetch requests
+    fetchController = new AbortController(); // Create a new controller for the new request
+
+    clearMarkers(); // Clear existing markers before loading new data
+    map.data.forEach(feature => map.data.remove(feature)); // Clear existing GeoJSON overlays
+
+    const selectedDistrict = districts.find(d => d.name === `District ${districtNumber}`);
+    if (!selectedDistrict) {
+      console.log(`District ${districtNumber} not found.`);
+      return;
+    }
+
+    try {
+      const districtGeoJson = await fetchGeoJson(selectedDistrict.geoJsonUrl, fetchController.signal);
+      map.data.addGeoJson(districtGeoJson);
+      map.data.setStyle({
+        fillColor: 'blue',
+        strokeWeight: 1
+      });
+
+      // Fetch and display houses for the selected district
+      await fetchHouses(districtNumber);
+    } catch (error) {
+      console.error('Error during fetch:', error);
+    }
+  }
+
+  async function fetchHouses(districtNumber) {
+    if (currentDistrict !== districtNumber) {
+      console.log(`Aborting fetchHouses for District ${districtNumber}.`);
+      return;
+    }
+    const url = `https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/district_data/combined_${districtNumber}_zillow_listings.json`;
+
+    // https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/district_data/combined_1_zillow_listings.json
+    // Fetch the district's GeoJSON to use for filtering
+    const districtGeoJson = await fetchGeoJson(districts[districtNumber - 1].geoJsonUrl);
+
+    try {
+      const response = await fetch(url);
+      const listings = await response.json();
+
+      if (listings && listings.length > 0) {
+        const insideListings = [];
+        const outsideListings = [];
+
+        // Filter listings and categorize them as inside or outside the GeoJSON boundaries
+        listings.forEach(listing => {
+          if (!listing.latitude || !listing.longitude) {
+            outsideListings.push(listing);
+            return;
+          }
+          const point = turf.point([listing.longitude, listing.latitude]);
+          const polygon = districtGeoJson.features[0].geometry;
+          if (turf.booleanPointInPolygon(point, polygon)) {
+            insideListings.push(listing);
+          } else {
+            outsideListings.push(listing);
+          }
+        });
+
+        // Log the filtered listings
+        console.log(`Listings inside District ${districtNumber}:`, insideListings);
+        console.log(`Listings outside District ${districtNumber}:`, outsideListings);
+
+        displayHousesOnMap(insideListings, districtNumber);
+      }
+    } catch (error) {
+      console.error('Error fetching houses:', error);
+    }
+  }
+
+
+  function displayHousesOnMap(listings, districtNumber) {
+    if (currentDistrict !== districtNumber) {
+      console.log(`Not displaying houses for District ${districtNumber}.`);
+      return;
+    }
+
+    const redMarker = {
+      path: google.maps.SymbolPath.CIRCLE,
+      fillColor: 'red',
+      fillOpacity: 1,
+      scale: 5,
+      strokeColor: 'red',
+      strokeWeight: 1
+    };
+
+    listings.forEach(listing => {
+      // Assuming each listing has latitude and longitude properties
+      const marker = new google.maps.Marker({
+        position: { lat: listing.latitude, lng: listing.longitude },
+        map: map,
+        icon: redMarker
+      });
+      markers.push(marker); // Add marker to the array
+    });
+  }
+
+  function clearMarkers() {
+    console.log('Clearing markers...');
+    markers.forEach(marker => marker.setMap(null));
+    markers = [];
+  }
+
+  async function fetchGeoJson(url, signal) {
+    try {
+      const response = await fetch(url, { signal });
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching GeoJSON data:", error);
+      throw error; // Rethrow to handle in the calling function
+    }
+  }
+</script>
+</body>
+</html>
