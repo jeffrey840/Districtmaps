@@ -178,9 +178,25 @@
 			markerClusterer.clearMarkers();
 		}
 
+		const infoWindow = new google.maps.InfoWindow({ content: "", disableAutoPan: true });
+
 		listings.forEach(listing => {
 			const position = { lat: listing.latitude, lng: listing.longitude };
-			const marker = new google.maps.Marker({ position,map });
+			const marker = new google.maps.Marker({ position, map });
+
+			// Add click listener to each marker
+			marker.addListener("click", () => {
+				const content = `
+                <div>
+                    <h3>${listing.address}</h3>
+                    <p>Price: $${listing.price}</p>
+                    <p>Type: ${listing.propertyType}</p>
+                    <a href="https://www.zillow.com${listing.detailUrl}" target="_blank">View on Zillow</a>
+                </div>
+            `;
+				infoWindow.setContent(content);
+				infoWindow.open(map, marker);
+			});
 
 			markers.push(marker);
 		});
