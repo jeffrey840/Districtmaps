@@ -367,12 +367,21 @@ zil_cards_v2 had more nav features
 
     todo: when displaying eth filtered cards you will show the bathrooms or bedrooms equal to or above the selected values
 
+zillow_cards_12_v1
+not showing dots, showing  listings that  are not in the complete json
+
+zillow_cards_v2
+showing red dots , and filtering works .
+and has a semi complete nav bar ,
+but some functionalities does not work
+
+
 
         this code will fetch without teh props
 	async function fetchAndExtractData() {
 		try {
 			console.log("Fetching data from the JSON source.");
-			const response = await fetch('https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/combined_2_zillow_listings.json');
+			const response = await fetch('https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/district_data/combined_2_zillow_listings.json');
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
