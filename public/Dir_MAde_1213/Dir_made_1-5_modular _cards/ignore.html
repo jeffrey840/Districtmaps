@@ -8,58 +8,46 @@
 
 
 <script>
-	// ... [Existing script code] ...
 
-	// Function to fetch district specific JSON data
-	async function fetchDistrictData(districtNumber) {
+
+	async function fetchDistrictDataAndGeoJSON(districtNumber) {
 		try {
-			const response = await fetch(`https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/district_data/combined_${districtNumber}_zillow_listings.json`);
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
+			// Fetching district specific JSON data
+			const dataResponse = await fetch(`https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/district_data/combined_${districtNumber}_zillow_listings.json`);
+			if (!dataResponse.ok) {
+				throw new Error(`HTTP error while fetching district data! status: ${dataResponse.status}`);
 			}
-			const data = await response.json();
-			console.log("Processing data to extract needed fields.");
-			const extractedData = data.map(({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType,longitude,latitude }) =>
-				({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType, longitude,latitude }));
+			const data = await dataResponse.json();
 
-			console.log("Data processed and extracted.");
-			filteredData = extractedData;
-			currentDisplayData = extractedData;
-			console.log("Filtered data and current display data are set.");
-			filterCriteria.homeType = new Set();
-			console.log("Filter criteria for home type initialized.");
-			createCards(currentDisplayData);
+			// Fetching geojson data
+			const geojsonResponse = await fetch(`https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_${districtNumber}.geojson`);
+			if (!geojsonResponse.ok) {
+				throw new Error(`HTTP error while fetching geojson data! status: ${geojsonResponse.status}`);
+			}
+			const geojsonData = await geojsonResponse.json();
+			map.data.forEach(feature => map.data.remove(feature)); // Clear existing GeoJSON overlays
+			map.data.addGeoJson(geojsonData); // Add new GeoJSON overlay
+			map.data.setStyle({
+				fillColor: 'blue',
+				strokeWeight: 1
+			});
+
+			// Spatial filtering of data
+			const polygon = turf.polygon(geojsonData.features[0].geometry.coordinates);
+			const filteredData = data.filter(property => {
+				const point = turf.point([property.longitude, property.latitude]);
+				return turf.booleanPointInPolygon(point, polygon);
+			});
+
+			currentDisplayData = filteredData;
+			createCards(currentDisplayData); // Assuming createCards is a function to display cards based on filtered data
+
 		} catch (error) {
-			console.error('Error fetching district data: ', error);
+			console.error('Error in fetching data: ', error);
 		}
 	}
 
-	// Function to fetch and display the geojson overlay for a selected district
-	async function fetchGeoJSONOverlay(districtNumber) {
-		try {
-			const response = await fetch(`https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_${districtNumber}_.geojson`);
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-			const geojsonData = await response.json();
-			// Add logic to display this geojson data on the map
-			// ... [Add logic to integrate geojson with Google Maps] ...
-		} catch (error) {
-			console.error('Error fetching geojson overlay: ', error);
-		}
-	}
 
-	// Modifying the district dropdown event listener
-	document.getElementById('districtDropdown').addEventListener('click', function (event) {
-		if (event.target.classList.contains('dropdown-item')) {
-			const districtNumber = event.target.innerText.split(' ')[1]; // Assuming format "district X"
-			document.getElementById('districtTitle').innerText = event.target.innerText;
-			fetchDistrictData(districtNumber);
-			fetchGeoJSONOverlay(districtNumber);
-		}
-	});
-
-	// ... [Rest of the existing script] ...
 </script>
 
 
