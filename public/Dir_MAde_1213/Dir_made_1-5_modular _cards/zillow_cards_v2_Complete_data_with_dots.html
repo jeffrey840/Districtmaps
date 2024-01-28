@@ -5,8 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>LJ Zillow cards v2 </title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2Z4Lk0QfR6QngDRAQM6k0mzP7NJAu1vs&callback=initMap" async defer></script>
-<!--	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>-->
+<!--	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2Z4Lk0QfR6QngDRAQM6k0mzP7NJAu1vs&callback=initMap" async defer></script>-->
+	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
 </head>
 <body>
 
@@ -185,6 +185,8 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0"></script>
+
 <script>
 
 	function showLocationOptions() {
@@ -221,6 +223,7 @@
 	let redMarker;
 	let currentDisplayData = [];
 	let filteredData = [];
+	let filteredJsonData = [];
 	let currentPage = 1;
 	const cardsPerPage = 10; // Adjust this number to ensure an even number of cards
 	let filterCriteria = {
@@ -286,6 +289,19 @@
 				fillColor: 'blue',
 				strokeWeight: 1
 			});
+			// Spatial filtering of data
+			const polygon = turf.polygon(geojsonData.features[0].geometry.coordinates);
+			const filteredJsonData = extractedData.filter(property => {
+				// Ensure longitude and latitude are defined and numeric
+				if (typeof property.longitude !== 'number' || typeof property.latitude !== 'number') {
+					return false;
+				}
+				const point = turf.point([property.longitude, property.latitude]);
+				return turf.booleanPointInPolygon(point, polygon);
+			});
+
+			currentDisplayData = filteredJsonData;
+			createCards(currentDisplayData); // Update UI with filtered data
 
 		} catch (error) {
 			console.error('Error in fetching data: ', error);
@@ -295,7 +311,7 @@
 	function applyFilters() {
 		console.log("Applying filters with criteria: ", filterCriteria);
 
-		let currentFilteredData = filteredData.filter(listing => {
+		let currentFilteredData = currentDisplayData.filter(listing => {
 			const price = typeof listing.price === 'string' ? parseInt(listing.price.replace(/[^0-9.-]+/g, "")) : listing.price;
 			const meetsPrice = price >= filterCriteria.minPrice && price <= filterCriteria.maxPrice;
 			const meetsBedrooms = filterCriteria.bedrooms === 'any' || listing.bedrooms === filterCriteria.bedrooms;
@@ -313,7 +329,7 @@
 	function filterByBathrooms(bathCount) {
 		console.log(`Applying filter by bathrooms: ${bathCount}`);
 		// Check if 'any' is selected, then don't filter by bathrooms
-		const filtered = bathCount === 'any' ? filteredData : filteredData.filter(card => card.bathrooms === bathCount);
+		const filtered = bathCount === 'any' ? currentDisplayData : currentDisplayData.filter(card => card.bathrooms === bathCount);
 		currentDisplayData = filtered;
 		currentPage = 1; // Reset to first page
 		createCards(currentDisplayData);
@@ -322,7 +338,7 @@
 
 	function filterByBedrooms(bedCount) {
 		console.log(`Applying filter by bedrooms: ${bedCount}`);
-		const filtered = bedCount === 'any' ? filteredData : filteredData.filter(card => card.bedrooms === bedCount);
+		const filtered = bedCount === 'any' ? currentDisplayData : currentDisplayData.filter(card => card.bedrooms === bedCount);
 		currentDisplayData = filtered;
 		currentPage = 1; // Reset to first page
 		createCards(currentDisplayData);
@@ -346,7 +362,7 @@
 		console.log("Selected Min Price: ", minPrice);
 		console.log("Selected Max Price: ", maxPrice);
 
-		const filteredListings = filteredData.filter(listing => {
+		const filteredListings = currentDisplayData.filter(listing => {
 			let listingPrice = listing.price;
 			if (typeof listingPrice === 'string') {
 				listingPrice = parseInt(listingPrice.replace(/[^0-9.-]+/g, ""));
@@ -368,7 +384,7 @@
 		}).get();
 
 		// Filter listings based on selected home types
-		const filteredListings = filteredData.filter(listing => selectedTypes.includes(listing.propertyType));
+		const filteredListings = currentDisplayData.filter(listing => selectedTypes.includes(listing.propertyType));
 
 		// Update the card display
 		createCards(filteredListings);
@@ -383,7 +399,7 @@
 
 		console.log("Selected Types: ", selectedTypes);
 
-		const filteredListings = filteredData.filter(listing => {
+		const filteredListings = currentDisplayData.filter(listing => {
 			// Check if listing has a propertyType and if it's included in the selected types
 			// If no propertyType, decide whether to include or exclude such listings
 			return !listing.propertyType || selectedTypes.includes(listing.propertyType);
@@ -483,6 +499,7 @@
 		console.log("Google Map initialized.");
 	}
 </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2Z4Lk0QfR6QngDRAQM6k0mzP7NJAu1vs&callback=initMap" async defer></script>
 
 </body>
 </html>

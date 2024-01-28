@@ -10,42 +10,55 @@
 <script>
 
 
-	async function fetchDistrictDataAndGeoJSON(districtNumber) {
-		try {
-			// Fetching district specific JSON data
-			const dataResponse = await fetch(`https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/district_data/combined_${districtNumber}_zillow_listings.json`);
-			if (!dataResponse.ok) {
-				throw new Error(`HTTP error while fetching district data! status: ${dataResponse.status}`);
-			}
-			const data = await dataResponse.json();
+	// ...
 
-			// Fetching geojson data
-			const geojsonResponse = await fetch(`https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_${districtNumber}.geojson`);
-			if (!geojsonResponse.ok) {
-				throw new Error(`HTTP error while fetching geojson data! status: ${geojsonResponse.status}`);
-			}
-			const geojsonData = await geojsonResponse.json();
-			map.data.forEach(feature => map.data.remove(feature)); // Clear existing GeoJSON overlays
-			map.data.addGeoJson(geojsonData); // Add new GeoJSON overlay
-			map.data.setStyle({
-				fillColor: 'blue',
-				strokeWeight: 1
-			});
-
-			// Spatial filtering of data
-			const polygon = turf.polygon(geojsonData.features[0].geometry.coordinates);
-			const filteredData = data.filter(property => {
-				const point = turf.point([property.longitude, property.latitude]);
-				return turf.booleanPointInPolygon(point, polygon);
-			});
-
-			currentDisplayData = filteredData;
-			createCards(currentDisplayData); // Assuming createCards is a function to display cards based on filtered data
-
-		} catch (error) {
-			console.error('Error in fetching data: ', error);
+	document.getElementById('districtDropdown').addEventListener('click', function (event) {
+		if (event.target.classList.contains('dropdown-item')) {
+			const districtNumber = event.target.innerText.split(' ')[1]; // Assuming format "district X"
+			document.getElementById('districtTitle').innerText = event.target.innerText;
+			fetchDistrictDataAndGeoJSON(districtNumber);
 		}
+	});
+
+	let currentDisplayData = [];
+	let filteredData = [];
+	let currentPage = 1;
+	const cardsPerPage = 10;
+	let filterCriteria = {
+		minPrice: 0,
+		maxPrice: Infinity,
+		bedrooms: 'any',
+		bathrooms: 'any',
+		homeType: new Set()
+	};
+
+	// ...
+
+	async function fetchDistrictDataAndGeoJSON(districtNumber) {
+		// ... Existing logic ...
+
+		// After fetching and spatially filtering data:
+		currentDisplayData = filteredJsonData;
+		createCards(currentDisplayData);
 	}
+
+	function applyFilters() {
+		console.log("Applying filters with criteria: ", filterCriteria);
+
+		let currentFilteredData = currentDisplayData.filter(listing => {
+			// ... Existing filtering logic ...
+		});
+		console.log("Combined filters applied. Number of items after filtering:", currentFilteredData.length);
+
+		currentDisplayData = currentFilteredData;
+		currentPage = 1;
+		createCards(currentDisplayData);
+	}
+
+	// ... Modify other filtering functions similarly to use currentDisplayData ...
+
+	// ...
+
 
 
 </script>
