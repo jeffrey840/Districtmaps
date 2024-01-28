@@ -10,54 +10,44 @@
 <script>
 
 
-	// ...
+	// ... [Previous code] ...
 
-	document.getElementById('districtDropdown').addEventListener('click', function (event) {
-		if (event.target.classList.contains('dropdown-item')) {
-			const districtNumber = event.target.innerText.split(' ')[1]; // Assuming format "district X"
-			document.getElementById('districtTitle').innerText = event.target.innerText;
-			fetchDistrictDataAndGeoJSON(districtNumber);
-		}
-	});
+	let infoWindow = new google.maps.InfoWindow();
 
-	let currentDisplayData = [];
-	let filteredData = [];
-	let currentPage = 1;
-	const cardsPerPage = 10;
-	let filterCriteria = {
-		minPrice: 0,
-		maxPrice: Infinity,
-		bedrooms: 'any',
-		bathrooms: 'any',
-		homeType: new Set()
-	};
+	function updateMapMarkers(items) {
+		// Clear existing markers
+		markers.forEach(marker => marker.setMap(null));
+		markers = [];
 
-	// ...
+		// Add new markers
+		items.forEach(item => {
+			if (item.latitude && item.longitude) {
+				const marker = new google.maps.Marker({
+					position: { lat: parseFloat(item.latitude), lng: parseFloat(item.longitude) },
+					map: map,
+					icon: redMarker
+				});
 
-	async function fetchDistrictDataAndGeoJSON(districtNumber) {
-		// ... Existing logic ...
+				// Adding click event listener for each marker
+				marker.addListener('click', () => {
+					const content = `
+                    <div>
+                        <h3>${item.address}</h3>
+                        <p>Price: $${item.price}</p>
+                        <p>Type: ${item.propertyType}</p>
+                        <a href="https://www.zillow.com${item.detailUrl}" target="_blank">View on Zillow</a>
+                    </div>
+                `;
+					infoWindow.setContent(content);
+					infoWindow.open(map, marker);
+				});
 
-		// After fetching and spatially filtering data:
-		currentDisplayData = filteredJsonData;
-		createCards(currentDisplayData);
-	}
-
-	function applyFilters() {
-		console.log("Applying filters with criteria: ", filterCriteria);
-
-		let currentFilteredData = currentDisplayData.filter(listing => {
-			// ... Existing filtering logic ...
+				markers.push(marker);
+			}
 		});
-		console.log("Combined filters applied. Number of items after filtering:", currentFilteredData.length);
-
-		currentDisplayData = currentFilteredData;
-		currentPage = 1;
-		createCards(currentDisplayData);
 	}
 
-	// ... Modify other filtering functions similarly to use currentDisplayData ...
-
-	// ...
+	// ... [Rest of the code] ...
 
 
 

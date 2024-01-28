@@ -270,8 +270,8 @@
 				throw new Error(`HTTP error while fetching district data! status: ${dataResponse.status}`);
 			}
 			const data = await dataResponse.json();
-			const extractedData = data.map(({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType, longitude, latitude }) =>
-				({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType, longitude, latitude }));
+			const extractedData = data.map(({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType, longitude, latitude, detailUrl }) =>
+				({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType, longitude, latitude, detailUrl }));
 			filteredData = extractedData;
 			currentDisplayData = extractedData;
 			filterCriteria.homeType = new Set();
@@ -432,6 +432,9 @@
 		markers.forEach(marker => marker.setMap(null));
 		markers = [];
 
+		// Initialize an info window
+		const infoWindow = new google.maps.InfoWindow({ content: "", disableAutoPan: true });
+
 		// Add new markers
 		items.forEach(item => {
 			if (item.latitude && item.longitude) {
@@ -440,10 +443,26 @@
 					map: map,
 					icon: redMarker
 				});
+
+				// Attach click event listener to the marker
+				marker.addListener("click", () => {
+					const content = `
+                    <div>
+                        <p>${item.address}</p>
+                        <p>Price: $${item.price}</p>
+                        <p>Type: ${item.propertyType}</p>
+                        <a href="https://www.zillow.com${item.detailUrl}" target="_blank">View on Zillow</a>
+                    </div>
+                `;
+					infoWindow.setContent(content);
+					infoWindow.open(map, marker);
+				});
+
 				markers.push(marker);
 			}
 		});
 	}
+
 
 	function createCards(cardsData) {
 		console.log("Displaying cards for page " + currentPage);
@@ -497,6 +516,7 @@
 		};
 
 		console.log("Google Map initialized.");
+		fetchDistrictDataAndGeoJSON(1);
 	}
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2Z4Lk0QfR6QngDRAQM6k0mzP7NJAu1vs&callback=initMap" async defer></script>

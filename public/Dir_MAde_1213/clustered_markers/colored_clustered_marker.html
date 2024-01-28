@@ -75,11 +75,6 @@
 
 		const markers = properties.map(property => {
 			const position = { lat: property.latitude, lng: property.longitude };
-			// const icon = {
-			// 	url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg"><path d="M5 22h14V12h3L12 3 2 12h3v10zm2-7h10v5H7v-5zm2-3h2v2H9v-2zm4 0h2v2h-2v-2z" fill="#ff9800"/></svg>'),
-			// 	scaledSize: new google.maps.Size(45, 45),
-			// 	anchor: new google.maps.Point(45, 45)
-			// };
 
 
 			const marker = new google.maps.Marker({ position, map });
