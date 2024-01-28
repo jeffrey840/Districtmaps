@@ -211,7 +211,10 @@
 	});
 	document.getElementById('districtDropdown').addEventListener('click', function (event) {
 		if (event.target.classList.contains('dropdown-item')) {
+			const districtNumber = event.target.innerText.split(' ')[1]; // Assuming format "district X"
 			document.getElementById('districtTitle').innerText = event.target.innerText;
+			fetchDistrictData(districtNumber);
+			fetchGeoJSONOverlay(districtNumber);
 		}
 	});
 	let map;
@@ -255,6 +258,43 @@
 	}
 	document.addEventListener('DOMContentLoaded', fetchAndExtractData);
 	// Function to create cards dynamically
+
+	async function fetchDistrictData(districtNumber) {
+		try {
+			const response = await fetch(`https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/district_data/combined_${districtNumber}_zillow_listings.json`);
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			const data = await response.json();
+			console.log("Processing data to extract needed fields.");
+			const extractedData = data.map(({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType,longitude,latitude }) =>
+				({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType, longitude,latitude }));
+
+			console.log("Data processed and extracted.");
+			filteredData = extractedData;
+			currentDisplayData = extractedData;
+			console.log("Filtered data and current display data are set.");
+			filterCriteria.homeType = new Set();
+			console.log("Filter criteria for home type initialized.");
+			createCards(currentDisplayData);
+		} catch (error) {
+			console.error('Error fetching district data: ', error);
+		}
+	}
+
+	async function fetchGeoJSONOverlay(districtNumber) {
+		try {
+			const response = await fetch(`https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_${districtNumber}.geojson`);
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			const geojsonData = await response.json();
+			// Add logic to display this geojson data on the map
+			// ... [Add logic to integrate geojson with Google Maps] ...
+		} catch (error) {
+			console.error('Error fetching geojson overlay: ', error);
+		}
+	}
 
 	function applyFilters() {
 		console.log("Applying filters with criteria: ", filterCriteria);
