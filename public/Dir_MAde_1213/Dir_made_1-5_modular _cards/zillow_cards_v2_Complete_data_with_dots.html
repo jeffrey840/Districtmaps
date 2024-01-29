@@ -463,7 +463,6 @@
 		});
 	}
 
-
 	function createCards(cardsData) {
 		console.log("Displaying cards for page " + currentPage);
 		console.log("Data passed to createCards: ", cardsData);
@@ -486,7 +485,7 @@
             <div class="photo" style="height: 120px; background-position: center; background-repeat: no-repeat; background-size: cover; display: flex; justify-content: space-between; background-image: url('${card.imgSrc}');">
             </div>
             <div class="description" style="padding: 8px;">
-                <div class="price" style="font-size: 1.2em; font-weight: bolder;">${card.price}</div>
+                <div class="price" style="font-size: 1.2em; font-weight: bolder;">$${card.price}</div>
                 <div class="info" style="font-size: 0.75em;">${card.bedrooms} bds ${card.bathrooms} ba ${card.livingArea} sqft</div>
                 <div class="address" style="font-size: 0.75em;">${card.address}</div>
             </div>
