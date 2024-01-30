@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+</head>
+<body>
+
+<form id="search-form" class="d-flex">
+	<input id="searchBox" type="text" placeholder="City, Neighborhood, ZIP, Address" aria-autocomplete="list" autocomplete="on" aria-expanded="false" onfocus="showLocationOptions()" onblur="hideLocationOptions()">
+	<div id="location-options" class="position-absolute start-3 pt-4 d-none">
+		<small><a href="#" onclick="useCurrentLocation()">Use Current Location</a></small>
+	</div>
+	<button class="btn btn-outline-success" type="submit">Search</button>
+</form>
+
+
+
+<script>
+	// ... [Your existing script code] ...
+
+	let geoJsonData;
+
+	async function fetchAndProcessGeoJson(url) {
+		try {
+			const response = await fetch(url);
+			geoJsonData = await response.json();
+		} catch (error) {
+			console.error("Error fetching GeoJSON data:", error);
+		}
+	}
+
+	function checkPointInGeoJsonPolygon(geoJsonData, pointCoordinates) {
+		const isInside = geoJsonData.features.some(feature => {
+			const polygon = turf.polygon(feature.geometry.coordinates);
+			const point = turf.point(pointCoordinates);
+			return turf.booleanPointInPolygon(point, polygon);
+		});
+		alert(isInside ? "Location is within the boundary." : "Location is outside the boundary.");
+	}
+
+	document.getElementById('search-form').addEventListener('submit', async function(event) {
+		event.preventDefault(); // Prevent the form from submitting normally
+		const address = document.getElementById('searchBox').value;
+		const geocoder = new google.maps.Geocoder();
+
+		try {
+			const location = await geocodeAddress(geocoder, address);
+			const pointCoordinates = [location.lng(), location.lat()];
+
+			if (geoJsonData) {
+				checkPointInGeoJsonPolygon(geoJsonData, pointCoordinates);
+			} else {
+				alert("GeoJSON data is not yet loaded. Please try again.");
+			}
+		} catch (error) {
+			alert(error);
+		}
+	});
+
+	// ... [Rest of your existing script code] ...
+
+	document.addEventListener('DOMContentLoaded', function() {
+		fetchAndProcessGeoJson('https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/merged_districts.geojson');
+	});
+</script>
+
+
+
+</body>
+</html>

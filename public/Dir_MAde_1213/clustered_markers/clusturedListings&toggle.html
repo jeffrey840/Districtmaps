@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Marker Clustering</title>
+	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+	<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+	<style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            height: 90%;
+            width: 100%;
+        }
+        #districtSelector {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: white;
+            padding: 5px;
+            border-radius: 5px;
+        }
+	</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="districtSelector">
+	<label for="districts">Select District:</label>
+	<select id="districts">
+		<option value="1">District 1</option>
+		<option value="2">District 2</option>
+		<option value="3">District 3</option>
+		<option value="4">District 4</option>
+		<option value="5">District 5</option>
+		<option value="6">District 6</option>
+		<option value="7">District 7</option>
+		<option value="8">District 8</option>
+		<option value="9">District 9</option>
+	</select>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2Z4Lk0QfR6QngDRAQM6k0mzP7NJAu1vs&callback=initMap" async defer></script>
+
+<script type="module">
+	import { MarkerClusterer } from "https://cdn.skypack.dev/@googlemaps/markerclusterer@2.3.1";
+
+	document.addEventListener('DOMContentLoaded', (event) => {
+		document.getElementById('districts').addEventListener('change', function() {
+			loadDistrictData(this.value);
+		});
+	});
+
+	let map;
+	let markers = []; // Array to hold map markers
+	let markerClusterer;
+	let fetchController;
+	let currentDistrict = '';
+	const districts = [
+		{
+			name: "District 1",
+			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_1.geojson"
+		},
+		{
+			name: "District 2",
+			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_2.geojson"
+		},
+		{
+			name: "District 3",
+			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_3.geojson"
+		},
+		{
+			name: "District 4",
+			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_4.geojson"
+		},
+		{
+			name: "District 5",
+			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_5.geojson"
+		},
+		{
+			name: "District 6",
+			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_6.geojson"
+		},
+		{
+			name: "District 7",
+			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_7.geojson"
+		},
+		{
+			name: "District 8",
+			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_8.geojson"
+		},
+		{
+			name: "District 9",
+			geoJsonUrl: "https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_9.geojson"
+		}
+		// Add other districts here if needed
+	];
+
+	function initMap() {
+		map = new google.maps.Map(document.getElementById('map'), {
+			zoom: 12,
+			center: { lat: 29.842912, lng: -95.323 },
+			// mapId: "DEMO_MAP_ID",
+		});
+		document.getElementById('districts').addEventListener('change', function() {
+			loadDistrictData(this.value);
+		});
+
+		loadDistrictData('1'); // Load District 1 data initially
+	}
+
+	async function loadDistrictData(districtNumber) {
+		currentDistrict = districtNumber;
+		if (fetchController) fetchController.abort();
+		fetchController = new AbortController();
+
+		clearMarkers();
+		map.data.forEach(feature => map.data.remove(feature));
+
+		const selectedDistrict = districts.find(d => d.name === `District ${districtNumber}`);
+		if (!selectedDistrict) {
+			return;
+		}
+
+		try {
+			const districtGeoJson = await fetchGeoJson(selectedDistrict.geoJsonUrl, fetchController.signal);
+			map.data.addGeoJson(districtGeoJson);
+			map.data.setStyle({
+				fillColor: 'blue',
+				strokeWeight: 1
+			});
+
+			await fetchHouses(districtNumber);
+		} catch (error) {
+			console.error('Error during fetch:', error);
+		}
+	}
+
+	async function fetchHouses(districtNumber) {
+		if (currentDistrict !== districtNumber) {
+			return;
+		}
+
+		const url = `https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/district_data/combined_${districtNumber}_zillow_listings.json`;
+		const districtGeoJson = await fetchGeoJson(districts[districtNumber - 1].geoJsonUrl);
+
+		try {
+			const response = await fetch(url);
+			const listings = await response.json();
+
+			if (listings && listings.length > 0) {
+				const insideListings = listings.filter(listing => {
+					if (!listing.latitude || !listing.longitude) {
+						return false;
+					}
+					const point = turf.point([listing.longitude, listing.latitude]);
+					const polygon = districtGeoJson.features[0].geometry;
+					return turf.booleanPointInPolygon(point, polygon);
+				});
+
+				displayHousesOnMap(insideListings, districtNumber);
+			}
+		} catch (error) {
+			console.error('Error fetching houses:', error);
+		}
+	}
+
+	function displayHousesOnMap(listings, districtNumber) {
+		if (currentDistrict !== districtNumber) {
+			return;
+		}
+
+		clearMarkers();
+		if (markerClusterer) {
+			markerClusterer.clearMarkers();
+		}
+
+		const infoWindow = new google.maps.InfoWindow({ content: "", disableAutoPan: true });
+
+		listings.forEach(listing => {
+			const position = { lat: listing.latitude, lng: listing.longitude };
+			const marker = new google.maps.Marker({ position, map });
+
+			// Add click listener to each marker
+			marker.addListener("click", () => {
+				const content = `
+                <div>
+                    <h3>${listing.address}</h3>
+                    <p>Price: $${listing.price}</p>
+                    <p>Type: ${listing.propertyType}</p>
+                    <a href="https://www.zillow.com${listing.detailUrl}" target="_blank">View on Zillow</a>
+                </div>
+            `;
+				infoWindow.setContent(content);
+				infoWindow.open(map, marker);
+			});
+
+			markers.push(marker);
+		});
+
+		markerClusterer = new MarkerClusterer({ markers, map });
+	}
+
+	function clearMarkers() {
+		markers.forEach(marker => marker.setMap(null));
+		markers = [];
+	}
+
+	async function fetchGeoJson(url, signal) {
+		const response = await fetch(url, { signal });
+		return await response.json();
+	}
+
+	initMap();
+</script>
+</body>
+</html>
