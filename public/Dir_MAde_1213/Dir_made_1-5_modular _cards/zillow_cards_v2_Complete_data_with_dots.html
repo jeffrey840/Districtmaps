@@ -15,6 +15,11 @@
 	<!-- Navbar with Search Bar -->
 	<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
 		<div class="container-fluid">
+
+			<form id="search-form" class="d-flex">
+				<input id="searchBox" type="text" placeholder=" Enter location" aria-autocomplete="list" autocomplete="on">
+				<button class="btn btn-outline-success" type="submit">Search</button>
+			</form>
 			<!-- For Sale Dropdown -->
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 				<li class="nav-item dropdown">
@@ -28,20 +33,12 @@
 					</ul>
 				</li>
 			</ul>
-			<form id="search-form" class="d-flex">
-				<input id="searchBox" type="text" placeholder="Enter address or location" aria-autocomplete="list" autocomplete="on">
-				<button class="btn btn-outline-success" type="submit">Search</button>
-			</form>
-
-			<!-- reset filter -->
-			<ul class="nav nav-pills">
-				<li class="nav-item">
-					<a class="nav-link active" id="toggle-button" href="#">Reset</a>
-				</li>
-			</ul>
 
 			<!-- district Dropdown -->
 			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link" id="districtTitle">district 1</a>
+				</li>
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 						Districts
@@ -56,10 +53,8 @@
 						<li><a class="dropdown-item" href="#">district 7</a></li>
 					</ul>
 				</li>
-				<li class="nav-item">
-					<a class="nav-link" id="districtTitle">district 1</a>
-				</li>
 			</ul>
+			<div class="vr"></div>
 
 			<!-- Price Range Dropdown -->
 			<ul class="navbar-nav">
@@ -70,7 +65,7 @@
 					<div class="dropdown-menu">
 						<form id="price-range-form">
 							<label for="min-price">Minimum</label>
-							<input type="number" id="min-price" placeholder="Enter number">
+							<input type="number" id="min-price" placeholder="Enter number" >
 							<label for="max-price">Maximum</label>
 							<select id="max-price">
 								<!-- Options added via JavaScript -->
@@ -80,6 +75,7 @@
 					</div>
 				</li>
 			</ul>
+			<div class="vr"></div>
 
 			<!-- Beds & Baths Dropdown -->
 			<ul class="navbar-nav">
@@ -119,6 +115,7 @@
 					</div>
 				</li>
 			</ul>
+			<div class="vr"></div>
 
 			<!-- Home Type Dropdown -->
 			<ul class="navbar-nav">
@@ -150,6 +147,15 @@
 					</div>
 				</li>
 			</ul>
+			<div class="vr"></div>
+
+			<!-- reset filter -->
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link active" id="toggle-button" href="#">Reset</a>
+				</li>
+			</ul>
+
 		</div>
 	</nav>
 
@@ -553,7 +559,7 @@
 		console.log("Initializing Google Map.");
 		map = new google.maps.Map(document.getElementById('map-container'), {
 			center: { lat: 29.760799, lng: -95.369507 },
-			zoom: 12
+			zoom: 11
 		});
 
 		redMarker = {
