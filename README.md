@@ -17,3 +17,9 @@ This application is a comprehensive tool for finding real estate listings within
 
 ## Technical Details
 - **Integrated APIs**: Utilizes Google Maps for mapping, Turf.js for geospatial analysis, and the Zillow API for real estate data.
+
+## Project demo
+https://github.com/jeffrey840/Districtmaps/assets/106411997/5eba3fb3-e0ff-49ee-a048-ed63a04c5852
+
+https://github.com/jeffrey840/Districtmaps/assets/106411997/288cf359-8295-48c4-bfda-a24453561ce2
+
