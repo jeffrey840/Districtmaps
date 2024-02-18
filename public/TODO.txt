@@ -298,8 +298,6 @@ another dropdown within, "dropdown tltled, more"
 another dropdown within, "dropdown tltled, more"
         keywords: input field placeholder[MLS, yard , etc]
 
-
-
 #### Acceptance Criteria:
 
 1. **Viewing Listings:**
