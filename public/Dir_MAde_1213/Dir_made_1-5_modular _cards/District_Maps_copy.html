@@ -206,6 +206,7 @@
 		console.log('User selected to use current location');
 		// Implement your logic for using the current location here
 	}
+
 	$(document).ready(function(){
 		const maxPriceSelect = $('#max-price');
 		for (let i = 50000; i <= 1000000; i += 50000) {
@@ -262,8 +263,8 @@
 			console.error('Error in fetching and processing data: ', error);
 		}
 	}
+
 	document.addEventListener('DOMContentLoaded', fetchAndExtractData);
-	// Function to create cards dynamically
 
 	async function fetchDistrictDataAndGeoJSON(districtNumber) {
 		try {
@@ -347,7 +348,7 @@
 		createCards(currentDisplayData);
 		console.log("Filter by bedrooms applied. Number of items after filtering:", currentDisplayData.length);
 	}
-	// Call the fetchAndExtractData function when the DOM content is loaded
+
 	function applyBedsBaths() {
 		console.log("Applying filter by bedrooms and bathrooms.");
 		const selectedBedrooms = document.getElementById('bedroom-selector').value;
@@ -358,6 +359,7 @@
 		console.log("Filter by bedrooms and bathrooms applied. Current filter criteria:", filterCriteria);
 		applyFilters();
 	}
+
 	function applyPriceRange() {
 		console.log("Applying price range filter.");
 		const minPrice = parseInt($('#min-price').val()) || 0;
@@ -393,6 +395,7 @@
 		createCards(filteredListings);
 		console.log("Home type filter updated.");
 	}
+
 	function applyHomeType() {
 		console.log("Applying home type filter.");
 		const selectedTypes = [];
@@ -498,6 +501,7 @@
 		console.log("Cards created and displayed for current page.");
 		updateMapMarkers(paginatedItems);
 	}
+
 	let geoJsonData;
 
 	async function fetchAndProcessGeoJson(url) {
@@ -517,6 +521,7 @@
 		});
 		alert(isInside ? "Location is within the boundary." : "Location is outside the boundary.");
 	}
+
 	async function geocodeAddress(geocoder, address) {
 		return new Promise((resolve, reject) => {
 			geocoder.geocode({ 'address': address }, (results, status) => {
@@ -548,7 +553,7 @@
 		}
 	});
 
-	// ... [Rest of your existing script code] ...
+
 
 	document.addEventListener('DOMContentLoaded', function() {
 		fetchAndProcessGeoJson('https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/merged_districts.geojson');
