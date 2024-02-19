@@ -3,17 +3,23 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Zillow Listings 6</title>
+	<title>LJ Zillow cards v2 </title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2Z4Lk0QfR6QngDRAQM6k0mzP7NJAu1vs&callback=initMap" async defer></script>
+<!--	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2Z4Lk0QfR6QngDRAQM6k0mzP7NJAu1vs&callback=initMap" async defer></script>-->
+	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
 </head>
 <body>
 
 <div class="container-fluid" style="font-family: 'Lato', sans-serif;">
 
 	<!-- Navbar with Search Bar -->
-	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
 		<div class="container-fluid">
+
+			<form id="search-form" class="d-flex">
+				<input id="searchBox" type="text" placeholder=" Enter location" aria-autocomplete="list" autocomplete="on">
+				<button class="btn btn-outline-success" type="submit">Search</button>
+			</form>
 			<!-- For Sale Dropdown -->
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 				<li class="nav-item dropdown">
@@ -27,10 +33,28 @@
 					</ul>
 				</li>
 			</ul>
-			<form class="d-flex">
-				<input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-				<button class="btn btn-outline-success" type="submit">Search</button>
-			</form>
+
+			<!-- district Dropdown -->
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link" id="districtTitle">district 1</a>
+				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						Districts
+					</a>
+					<ul class="dropdown-menu" id="districtDropdown">
+						<li><a class="dropdown-item" href="#">district 1</a></li>
+						<li><a class="dropdown-item" href="#">district 2</a></li>
+						<li><a class="dropdown-item" href="#">district 3</a></li>
+						<li><a class="dropdown-item" href="#">district 4</a></li>
+						<li><a class="dropdown-item" href="#">district 5</a></li>
+						<li><a class="dropdown-item" href="#">district 6</a></li>
+						<li><a class="dropdown-item" href="#">district 7</a></li>
+					</ul>
+				</li>
+			</ul>
+			<div class="vr"></div>
 
 			<!-- Price Range Dropdown -->
 			<ul class="navbar-nav">
@@ -41,7 +65,7 @@
 					<div class="dropdown-menu">
 						<form id="price-range-form">
 							<label for="min-price">Minimum</label>
-							<input type="number" id="min-price" placeholder="Enter number">
+							<input type="number" id="min-price" placeholder="Enter number" >
 							<label for="max-price">Maximum</label>
 							<select id="max-price">
 								<!-- Options added via JavaScript -->
@@ -51,6 +75,7 @@
 					</div>
 				</li>
 			</ul>
+			<div class="vr"></div>
 
 			<!-- Beds & Baths Dropdown -->
 			<ul class="navbar-nav">
@@ -90,6 +115,7 @@
 					</div>
 				</li>
 			</ul>
+			<div class="vr"></div>
 
 			<!-- Home Type Dropdown -->
 			<ul class="navbar-nav">
@@ -121,13 +147,22 @@
 					</div>
 				</li>
 			</ul>
+			<div class="vr"></div>
+
+			<!-- reset filter -->
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link active" id="toggle-button" href="#">Reset</a>
+				</li>
+			</ul>
+
 		</div>
 	</nav>
 
 	<!-- Row for Cards and Map -->
 	<div class="row">
 		<!-- Left Column with Cards -->
-		<div class="col-md-6" style="height: 100vh">
+		<div class="col-md-6 pt-5" style="height: 100vh">
 			<!-- Scrollable area for cards -->
 			<div class="overflow-y-auto h-100">
 				<div style="display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 10px;" id="card-container" >
@@ -153,17 +188,46 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0"></script>
+
 <script>
 
-	$(document).ready(function() {
+	function showLocationOptions() {
+		document.getElementById('location-options').classList.remove('d-none');
+		console.log('Search box focused');
+	}
+
+	function hideLocationOptions() {
+		document.getElementById('location-options').classList.add('d-none');
+		console.log('Search box blurred');
+	}
+
+	function useCurrentLocation() {
+		console.log('User selected to use current location');
+		// Implement your logic for using the current location here
+	}
+
+	$(document).ready(function(){
 		const maxPriceSelect = $('#max-price');
 		for (let i = 50000; i <= 1000000; i += 50000) {
 			maxPriceSelect.append($('<option>', { value: i, text: `$${i.toLocaleString()}` }));
 		}
+		$('#toggle-button').click(function(){
+			$(this).toggleClass('active');
+		});
 	});
-
+	document.getElementById('districtDropdown').addEventListener('click', function (event) {
+		if (event.target.classList.contains('dropdown-item')) {
+			const districtNumber = event.target.innerText.split(' ')[1]; // Assuming format "district X"
+			document.getElementById('districtTitle').innerText = event.target.innerText;
+			fetchDistrictDataAndGeoJSON(districtNumber);
+		}
+	});
+	let map;
+	let redMarker;
 	let currentDisplayData = [];
 	let filteredData = [];
+	let filteredJsonData = [];
 	let currentPage = 1;
 	const cardsPerPage = 10; // Adjust this number to ensure an even number of cards
 	let filterCriteria = {
@@ -178,15 +242,15 @@
 	async function fetchAndExtractData() {
 		try {
 			console.log("Fetching data from the JSON source.");
-			const response = await fetch('https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/zillow_listings_77096_page1.json');
+			const response = await fetch('https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/district_data/combined_2_zillow_listings.json');
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
 			console.log("Data successfully fetched from the JSON source.");
 			const data = await response.json();
 			console.log("Processing data to extract needed fields.");
-			const extractedData = data.props.map(({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType }) =>
-				({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType }));
+			const extractedData = data.map(({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType,longitude,latitude }) =>
+				({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType, longitude,latitude }));
 
 			console.log("Data processed and extracted.");
 			filteredData = extractedData;
@@ -199,78 +263,123 @@
 			console.error('Error in fetching and processing data: ', error);
 		}
 	}
+
 	document.addEventListener('DOMContentLoaded', fetchAndExtractData);
-	// Function to create cards dynamically
+
+	async function fetchDistrictDataAndGeoJSON(districtNumber) {
+		try {
+			// Fetching district specific JSON data
+			const dataResponse = await fetch(`https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/district_data/combined_${districtNumber}_zillow_listings.json`);
+			if (!dataResponse.ok) {
+				throw new Error(`HTTP error while fetching district data! status: ${dataResponse.status}`);
+			}
+			const data = await dataResponse.json();
+			const extractedData = data.map(({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType, longitude, latitude, detailUrl }) =>
+				({ price, bedrooms, address, imgSrc, bathrooms, livingArea, currency, lotAreaUnit, daysOnZillow, propertyType, longitude, latitude, detailUrl }));
+			filteredData = extractedData;
+			currentDisplayData = extractedData;
+			filterCriteria.homeType = new Set();
+			createCards(currentDisplayData); // Assuming createCards is a function to display cards based on extracted data
+
+			// Fetching geojson data
+			const geojsonResponse = await fetch(`https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/district_${districtNumber}.geojson`);
+			if (!geojsonResponse.ok) {
+				throw new Error(`HTTP error while fetching geojson data! status: ${geojsonResponse.status}`);
+			}
+			const geojsonData = await geojsonResponse.json();
+			map.data.forEach(feature => map.data.remove(feature)); // Clear existing GeoJSON overlays
+			map.data.addGeoJson(geojsonData); // Add new GeoJSON overlay
+			map.data.setStyle({
+				fillColor: 'blue',
+				strokeWeight: 1
+			});
+			// Spatial filtering of data
+			const polygon = turf.polygon(geojsonData.features[0].geometry.coordinates);
+			const filteredJsonData = extractedData.filter(property => {
+				// Ensure longitude and latitude are defined and numeric
+				if (typeof property.longitude !== 'number' || typeof property.latitude !== 'number') {
+					return false;
+				}
+				const point = turf.point([property.longitude, property.latitude]);
+				return turf.booleanPointInPolygon(point, polygon);
+			});
+
+			currentDisplayData = filteredJsonData;
+			createCards(currentDisplayData); // Update UI with filtered data
+
+		} catch (error) {
+			console.error('Error in fetching data: ', error);
+		}
+	}
 
 	function applyFilters() {
 		console.log("Applying filters with criteria: ", filterCriteria);
 
-		let currentFilteredData = filteredData.filter(listing => {
+		let currentFilteredData = currentDisplayData.filter(listing => {
 			const price = typeof listing.price === 'string' ? parseInt(listing.price.replace(/[^0-9.-]+/g, "")) : listing.price;
 			const meetsPrice = price >= filterCriteria.minPrice && price <= filterCriteria.maxPrice;
-			const meetsBedrooms = filterCriteria.bedrooms === 'any' || listing.bedrooms === parseInt(filterCriteria.bedrooms);
-			const meetsBathrooms = filterCriteria.bathrooms === 'any' || listing.bathrooms === parseInt(filterCriteria.bathrooms);
+			const meetsBedrooms = filterCriteria.bedrooms === 'any' || listing.bedrooms === filterCriteria.bedrooms;
+			const meetsBathrooms = filterCriteria.bathrooms === 'any' || listing.bathrooms === filterCriteria.bathrooms;
 			const meetsHomeType = filterCriteria.homeType.size === 0 || filterCriteria.homeType.has(listing.propertyType);
 			return meetsPrice && meetsBedrooms && meetsBathrooms && meetsHomeType;
 		});
+		console.log("Combined filters applied. Number of items after filtering:", currentFilteredData.length);
 
 		currentDisplayData = currentFilteredData;
 		currentPage = 1;
 		createCards(currentDisplayData);
 	}
 
-
-
 	function filterByBathrooms(bathCount) {
-		console.log(`Filter criteria updated by bathrooms: ${bathCount}`);
-		filterCriteria.bathrooms = bathCount; // Update filter criteria
-		applyFilters(); // Apply combined filters
+		console.log(`Applying filter by bathrooms: ${bathCount}`);
+		// Check if 'any' is selected, then don't filter by bathrooms
+		const filtered = bathCount === 'any' ? currentDisplayData : currentDisplayData.filter(card => card.bathrooms === bathCount);
+		currentDisplayData = filtered;
+		currentPage = 1; // Reset to first page
+		createCards(currentDisplayData);
+		console.log("Filter by bathrooms applied. Number of items after filtering:", currentDisplayData.length);
 	}
 
 	function filterByBedrooms(bedCount) {
-		console.log(`Filter criteria updated by bedrooms: ${bedCount}`);
-		filterCriteria.bedrooms = bedCount; // Update filter criteria
-		applyFilters(); // Apply combined filters
+		console.log(`Applying filter by bedrooms: ${bedCount}`);
+		const filtered = bedCount === 'any' ? currentDisplayData : currentDisplayData.filter(card => card.bedrooms === bedCount);
+		currentDisplayData = filtered;
+		currentPage = 1; // Reset to first page
+		createCards(currentDisplayData);
+		console.log("Filter by bedrooms applied. Number of items after filtering:", currentDisplayData.length);
 	}
-	// Call the fetchAndExtractData function when the DOM content is loaded
+
 	function applyBedsBaths() {
 		console.log("Applying filter by bedrooms and bathrooms.");
 		const selectedBedrooms = document.getElementById('bedroom-selector').value;
 		const selectedBathrooms = document.getElementById('bathroom-selector').value;
 
-		filterCriteria.bedrooms = isNaN(selectedBedrooms) ? 0 : selectedBedrooms;
-		filterCriteria.bathrooms = isNaN(selectedBathrooms) ? 'any' : selectedBathrooms;
+		filterCriteria.bedrooms = selectedBedrooms === 'any' ? 'any' : parseInt(selectedBedrooms);
+		filterCriteria.bathrooms = selectedBathrooms === 'any' ? 'any' : parseInt(selectedBathrooms);
 		console.log("Filter by bedrooms and bathrooms applied. Current filter criteria:", filterCriteria);
 		applyFilters();
 	}
+
 	function applyPriceRange() {
 		console.log("Applying price range filter.");
 		const minPrice = parseInt($('#min-price').val()) || 0;
 		const maxPrice = parseInt($('#max-price').val()) || Infinity;
-
-		// Update filter criteria for price
-		filterCriteria.minPrice = minPrice;
-		filterCriteria.maxPrice = maxPrice;
-
 		console.log("Selected Min Price: ", minPrice);
 		console.log("Selected Max Price: ", maxPrice);
 
-		const filteredListings = filteredData.filter(listing => {
+		const filteredListings = currentDisplayData.filter(listing => {
 			let listingPrice = listing.price;
 			if (typeof listingPrice === 'string') {
 				listingPrice = parseInt(listingPrice.replace(/[^0-9.-]+/g, ""));
 			}
 			return listingPrice >= minPrice && listingPrice <= maxPrice;
 		});
-		// Apply all filters together
-		applyFilters();
+
+		currentDisplayData = filteredListings; // Update currentDisplayData
+		currentPage = 1; // Reset to first page
+		createCards(currentDisplayData); // Call createCards with updated data
+		console.log("Price range filter applied. Current filter criteria:", filterCriteria);
 	}
-
-	currentDisplayData = filteredListings; // Update currentDisplayData
-	currentPage = 1; // Reset to first page
-	createCards(currentDisplayData); // Call createCards with updated data
-	console.log("Price range filter applied. Current filter criteria:", filterCriteria);
-
 
 	function updateHomeType() {
 		console.log("Updating home type filter.");
@@ -280,12 +389,13 @@
 		}).get();
 
 		// Filter listings based on selected home types
-		const filteredListings = filteredData.filter(listing => selectedTypes.includes(listing.propertyType));
+		const filteredListings = currentDisplayData.filter(listing => selectedTypes.includes(listing.propertyType));
 
 		// Update the card display
 		createCards(filteredListings);
 		console.log("Home type filter updated.");
 	}
+
 	function applyHomeType() {
 		console.log("Applying home type filter.");
 		const selectedTypes = [];
@@ -295,7 +405,7 @@
 
 		console.log("Selected Types: ", selectedTypes);
 
-		const filteredListings = filteredData.filter(listing => {
+		const filteredListings = currentDisplayData.filter(listing => {
 			// Check if listing has a propertyType and if it's included in the selected types
 			// If no propertyType, decide whether to include or exclude such listings
 			return !listing.propertyType || selectedTypes.includes(listing.propertyType);
@@ -323,6 +433,41 @@
 		}
 		console.log("Previous page displayed: Page", currentPage);
 	}
+	function updateMapMarkers(items) {
+		// Clear existing markers
+		markers.forEach(marker => marker.setMap(null));
+		markers = [];
+
+		// Initialize an info window
+		const infoWindow = new google.maps.InfoWindow({ content: "", disableAutoPan: true });
+
+		// Add new markers
+		items.forEach(item => {
+			if (item.latitude && item.longitude) {
+				const marker = new google.maps.Marker({
+					position: { lat: parseFloat(item.latitude), lng: parseFloat(item.longitude) },
+					map: map,
+					icon: redMarker
+				});
+
+				// Attach click event listener to the marker
+				marker.addListener("click", () => {
+					const content = `
+                    <div>
+                        <p>${item.address}</p>
+                        <p>Price: $${item.price}</p>
+                        <p>Type: ${item.propertyType}</p>
+                        <a href="https://www.zillow.com${item.detailUrl}" target="_blank">View on Zillow</a>
+                    </div>
+                `;
+					infoWindow.setContent(content);
+					infoWindow.open(map, marker);
+				});
+
+				markers.push(marker);
+			}
+		});
+	}
 
 	function createCards(cardsData) {
 		console.log("Displaying cards for page " + currentPage);
@@ -346,7 +491,7 @@
             <div class="photo" style="height: 120px; background-position: center; background-repeat: no-repeat; background-size: cover; display: flex; justify-content: space-between; background-image: url('${card.imgSrc}');">
             </div>
             <div class="description" style="padding: 8px;">
-                <div class="price" style="font-size: 1.2em; font-weight: bolder;">${card.price}</div>
+                <div class="price" style="font-size: 1.2em; font-weight: bolder;">$${card.price}</div>
                 <div class="info" style="font-size: 0.75em;">${card.bedrooms} bds ${card.bathrooms} ba ${card.livingArea} sqft</div>
                 <div class="address" style="font-size: 0.75em;">${card.address}</div>
             </div>
@@ -354,20 +499,88 @@
 			container.appendChild(cardElement);
 		});
 		console.log("Cards created and displayed for current page.");
+		updateMapMarkers(paginatedItems);
 	}
 
+	let geoJsonData;
+
+	async function fetchAndProcessGeoJson(url) {
+		try {
+			const response = await fetch(url);
+			geoJsonData = await response.json();
+		} catch (error) {
+			console.error("Error fetching GeoJSON data:", error);
+		}
+	}
+
+	function checkPointInGeoJsonPolygon(geoJsonData, pointCoordinates) {
+		const isInside = geoJsonData.features.some(feature => {
+			const polygon = turf.polygon(feature.geometry.coordinates);
+			const point = turf.point(pointCoordinates);
+			return turf.booleanPointInPolygon(point, polygon);
+		});
+		alert(isInside ? "Location is within the boundary." : "Location is outside the boundary.");
+	}
+
+	async function geocodeAddress(geocoder, address) {
+		return new Promise((resolve, reject) => {
+			geocoder.geocode({ 'address': address }, (results, status) => {
+				if (status === 'OK') {
+					resolve(results[0].geometry.location);
+				} else {
+					reject('Geocode was not successful for the following reason: ' + status);
+				}
+			});
+		});
+	}
+
+	document.getElementById('search-form').addEventListener('submit', async function(event) {
+		event.preventDefault(); // Prevent the form from submitting normally
+		const address = document.getElementById('searchBox').value;
+		const geocoder = new google.maps.Geocoder();
+
+		try {
+			const location = await geocodeAddress(geocoder, address);
+			const pointCoordinates = [location.lng(), location.lat()];
+
+			if (geoJsonData) {
+				checkPointInGeoJsonPolygon(geoJsonData, pointCoordinates);
+			} else {
+				alert("GeoJSON data is not yet loaded. Please try again.");
+			}
+		} catch (error) {
+			alert(error);
+		}
+	});
+
+
+
+	document.addEventListener('DOMContentLoaded', function() {
+		fetchAndProcessGeoJson('https://raw.githubusercontent.com/jeffrey840/zipcode_2/main/Hcc_districts_Geojson/merged_districts.geojson');
+	});
 	// Function to initialize Google Map
+	let markers = [];
 	function initMap() {
 		console.log("Initializing Google Map.");
-		const map = new google.maps.Map(document.getElementById('map-container'), {
-			center: {lat: 29.760799, lng: -95.369507},
-			zoom: 12
+		map = new google.maps.Map(document.getElementById('map-container'), {
+			center: { lat: 29.760799, lng: -95.369507 },
+			zoom: 11
 		});
+
+		redMarker = {
+			path: google.maps.SymbolPath.CIRCLE,
+			fillColor: 'red',
+			fillOpacity: 1,
+			scale: 5,
+			strokeColor: 'red',
+			strokeWeight: 1
+		};
+
 		console.log("Google Map initialized.");
+		fetchDistrictDataAndGeoJSON(1);
 	}
 </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2Z4Lk0QfR6QngDRAQM6k0mzP7NJAu1vs&callback=initMap" async defer></script>
 
 </body>
 </html>
-
-
